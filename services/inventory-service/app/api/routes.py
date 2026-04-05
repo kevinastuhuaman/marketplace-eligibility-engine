@@ -1,9 +1,10 @@
 from collections import defaultdict
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy import select, and_
+from fastapi import APIRouter, Depends, Query, Request
+from sqlalchemy import select, and_, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql import func
 
 from app.db import get_db
 from app.models.inventory import InventoryPosition
@@ -91,15 +92,16 @@ async def create_position(
 
 @router.post("/v1/inventory/events", status_code=201)
 async def create_event(
-    payload: EventCreate, db: AsyncSession = Depends(get_db)
+    payload: EventCreate, request: Request, db: AsyncSession = Depends(get_db)
 ):
     """Submit an inventory event. Updates position and publishes to Redis Stream."""
     new_qty = None
 
-    # Find and update the position if we have enough info
+    # Atomic update: single SQL statement avoids read-modify-write race condition
     if payload.delta is not None and payload.seller_id and payload.path_id:
-        result = await db.execute(
-            select(InventoryPosition).where(
+        stmt = (
+            update(InventoryPosition)
+            .where(
                 and_(
                     InventoryPosition.item_id == payload.item_id,
                     InventoryPosition.fulfillment_node == payload.fulfillment_node,
@@ -107,11 +109,16 @@ async def create_event(
                     InventoryPosition.seller_id == payload.seller_id,
                 )
             )
+            .values(
+                available_qty=func.greatest(
+                    0, InventoryPosition.available_qty + payload.delta
+                )
+            )
+            .returning(InventoryPosition.available_qty)
         )
-        pos = result.scalar_one_or_none()
-        if pos:
-            pos.available_qty = max(0, pos.available_qty + payload.delta)
-            new_qty = pos.available_qty
+        result = await db.execute(stmt)
+        row = result.first()
+        new_qty = row[0] if row else None
 
     # Record the event
     event = InventoryEvent(
@@ -126,7 +133,17 @@ async def create_event(
     db.add(event)
     await db.commit()
 
-    # TODO: Publish to Redis Stream (inventory:state_changes)
-    # The stream publisher will be wired in main.py lifespan
+    # Publish to Redis Stream
+    publisher = request.app.state.stream_publisher
+    if publisher and new_qty is not None:
+        event_type = "stock_depleted" if new_qty <= 0 else "stock_updated"
+        await publisher.publish(event_type, {
+            "item_id": str(payload.item_id),
+            "fulfillment_node": payload.fulfillment_node,
+            "path_id": payload.path_id,
+            "seller_id": str(payload.seller_id) if payload.seller_id else None,
+            "delta": payload.delta,
+            "new_available_qty": new_qty,
+        })
 
     return {"status": "recorded", "new_available_qty": new_qty}

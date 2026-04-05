@@ -10,3 +10,5 @@ build/
 .mypy_cache/
 .ruff_cache/
 postgres_data/
+uv.lock
+.venv/

@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 
@@ -56,7 +56,9 @@ async def check_offer(
 
 
 @router.post("/v1/sellers", status_code=201)
-async def create_seller(payload: SellerCreate, db: AsyncSession = Depends(get_db)):
+async def create_seller(
+    payload: SellerCreate, request: Request, db: AsyncSession = Depends(get_db)
+):
     seller = Seller(
         seller_id=payload.seller_id if payload.seller_id else None,
         name=payload.name,
@@ -69,6 +71,16 @@ async def create_seller(payload: SellerCreate, db: AsyncSession = Depends(get_db
     db.add(seller)
     await db.commit()
     await db.refresh(seller)
+
+    # Publish to Redis Stream
+    publisher = request.app.state.stream_publisher
+    if publisher:
+        await publisher.publish("seller_created", {
+            "seller_id": str(seller.seller_id),
+            "name": seller.name,
+            "trust_tier": seller.trust_tier,
+        })
+
     return {"seller_id": seller.seller_id, "name": seller.name}
 
 

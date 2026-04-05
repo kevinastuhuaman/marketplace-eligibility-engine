@@ -252,7 +252,25 @@ async def _load_matching_rules(
     )
 
     result = await db.execute(query)
-    return result.scalars().all()
+    rules = result.scalars().all()
+
+    # Post-filter on category_paths: a rule with category_paths set should only
+    # match items whose category_path is equal to or a descendant of one of the
+    # rule's category paths (mimics ltree <@ semantics).
+    item_cat = item_data.get("category_path", "")
+    if item_cat:
+        filtered = []
+        for rule in rules:
+            if rule.category_paths is None:
+                filtered.append(rule)
+            else:
+                for rcp in rule.category_paths:
+                    if item_cat == rcp or item_cat.startswith(rcp + "."):
+                        filtered.append(rule)
+                        break
+        rules = filtered
+
+    return rules
 
 
 def _error_response(item_id, market_code, timestamp, start, errors):

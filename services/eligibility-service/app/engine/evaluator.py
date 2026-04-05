@@ -254,6 +254,8 @@ def resolve_requirements(result: RuleResult, variables: dict) -> RuleResult:
                     passed = actual == threshold
                 elif op == "less_than":
                     passed = float(actual) < float(threshold)
+                elif op == "less_than_or_equal_to":
+                    passed = float(actual) <= float(threshold)
 
                 if passed:
                     req["satisfied"] = True

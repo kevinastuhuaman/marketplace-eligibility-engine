@@ -228,7 +228,7 @@ SELLERS: list[dict[str, Any]] = [
 SELLER_OFFERS: dict[str, list[str]] = {
     ACME_WINES_SELLER_ID: ["ALC-001", "ALC-002", "ALC-003"],
     TECHGEAR_SELLER_ID: ["ELEC-001", "ELEC-002"],
-    NEWSELLER_SELLER_ID: ["ELEC-001", "TOY-001"],
+    NEWSELLER_SELLER_ID: ["ELEC-001", "TOY-001", "ALC-002"],
     CHEMSUPPLY_SELLER_ID: ["CHEM-001", "CHEM-002"],
 }
 
@@ -625,6 +625,34 @@ COMPLIANCE_RULES: list[dict[str, Any]] = [
         rule_type="product",
         compliance_tags=["quantity_limited"],
         blocked_paths=ALL_PATHS,
+        metadata={
+            "regulation": "Combat Methamphetamine Epidemic Act",
+            "jurisdiction": "federal",
+        },
+    ),
+    _rule(
+        "pseudoephedrine_quantity_acknowledgment",
+        "REQUIRE",
+        40,
+        {
+            "all": [
+                {
+                    "name": "compliance_tags",
+                    "operator": "contains",
+                    "value": "quantity_limited",
+                },
+            ]
+        },
+        "DEA requires quantity acknowledgment for pseudoephedrine products",
+        rule_type="quantity",
+        compliance_tags=["quantity_limited"],
+        requirement={
+            "type": "quantity_acknowledgment",
+            "variable": "requested_quantity",
+            "operator": "less_than_or_equal_to",
+            "value": 3,
+            "instructions": "Quantity limited to 3 per purchase (Combat Methamphetamine Act)",
+        },
         metadata={
             "regulation": "Combat Methamphetamine Epidemic Act",
             "jurisdiction": "federal",
