@@ -27,16 +27,25 @@ async def evaluate(request_data: dict, db: AsyncSession) -> dict:
     """Main evaluation orchestrator."""
     start = time.perf_counter()
 
-    item_id = (
-        UUID(request_data["item_id"])
-        if isinstance(request_data["item_id"], str)
-        else request_data["item_id"]
-    )
-    market_code = request_data["market_code"]
-    seller_id_raw = request_data.get("seller_id")
-    seller_id = UUID(seller_id_raw) if seller_id_raw else None
-    timestamp = request_data["timestamp"]
-    state = request_data["customer_location"]["state"]
+    try:
+        item_id = (
+            UUID(request_data["item_id"])
+            if isinstance(request_data["item_id"], str)
+            else request_data["item_id"]
+        )
+        market_code = request_data["market_code"]
+        seller_id_raw = request_data.get("seller_id")
+        seller_id = UUID(seller_id_raw) if seller_id_raw else None
+        timestamp = request_data["timestamp"]
+        state = request_data["customer_location"]["state"]
+    except (KeyError, TypeError) as e:
+        return _error_response(
+            request_data.get("item_id", "unknown"),
+            request_data.get("market_code", "unknown"),
+            request_data.get("timestamp", datetime.now(PACIFIC).isoformat()),
+            start,
+            [f"Missing required field: {e}"],
+        )
 
     # Validate market_code matches state
     expected_state = market_code.split("-")[1] if "-" in market_code else None

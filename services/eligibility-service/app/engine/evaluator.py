@@ -55,13 +55,25 @@ def evaluate_condition(condition: dict, variables: dict) -> bool:
     elif operator == "not_equal_to":
         return var_value != value
     elif operator == "greater_than":
-        return float(var_value) > float(value)
+        try:
+            return float(var_value) > float(value)
+        except (ValueError, TypeError):
+            return False
     elif operator == "greater_than_or_equal_to":
-        return float(var_value) >= float(value)
+        try:
+            return float(var_value) >= float(value)
+        except (ValueError, TypeError):
+            return False
     elif operator == "less_than":
-        return float(var_value) < float(value)
+        try:
+            return float(var_value) < float(value)
+        except (ValueError, TypeError):
+            return False
     elif operator == "less_than_or_equal_to":
-        return float(var_value) <= float(value)
+        try:
+            return float(var_value) <= float(value)
+        except (ValueError, TypeError):
+            return False
     elif operator == "contains":
         if isinstance(var_value, list):
             return value in var_value
@@ -75,7 +87,10 @@ def evaluate_condition(condition: dict, variables: dict) -> bool:
     elif operator == "not_in":
         return var_value not in value
     elif operator == "between":
-        return value[0] <= float(var_value) <= value[1]
+        try:
+            return value[0] <= float(var_value) <= value[1]
+        except (ValueError, TypeError, IndexError):
+            return False
     return False
 
 
@@ -248,14 +263,17 @@ def resolve_requirements(result: RuleResult, variables: dict) -> RuleResult:
                 actual = variables.get(var_name)
 
                 passed = False
-                if op == "greater_than_or_equal_to":
-                    passed = float(actual) >= float(threshold)
-                elif op == "equal_to":
-                    passed = actual == threshold
-                elif op == "less_than":
-                    passed = float(actual) < float(threshold)
-                elif op == "less_than_or_equal_to":
-                    passed = float(actual) <= float(threshold)
+                try:
+                    if op == "greater_than_or_equal_to":
+                        passed = float(actual) >= float(threshold)
+                    elif op == "equal_to":
+                        passed = actual == threshold
+                    elif op == "less_than":
+                        passed = float(actual) < float(threshold)
+                    elif op == "less_than_or_equal_to":
+                        passed = float(actual) <= float(threshold)
+                except (ValueError, TypeError):
+                    passed = False
 
                 if passed:
                     req["satisfied"] = True

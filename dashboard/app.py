@@ -354,7 +354,7 @@ with tab2:
         )
     with c3:
         st.markdown(
-            f'<div class="metric-card"><h2>{seller_count}</h2><p>Sellers</p></div>',
+            f'<div class="metric-card"><h2>{seller_count}</h2><p>3P Sellers</p></div>',
             unsafe_allow_html=True,
         )
     with c4:
@@ -388,7 +388,7 @@ with tab2:
                     f'border-radius:8px;border:2px solid {color};">'
                     f'<span style="font-size:2rem;font-weight:700;color:{color};">'
                     f"{count}</span><br/>"
-                    f'<span style="color:{color};font-weight:600;">{action}</span></div>',
+                    f'<span style="color:{color};font-weight:600;">{html_escape(str(action))}</span></div>',
                     unsafe_allow_html=True,
                 )
 
