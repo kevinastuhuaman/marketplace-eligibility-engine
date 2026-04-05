@@ -83,9 +83,15 @@ def evaluate_condition(condition: dict, variables: dict) -> bool:
             return value not in var_value
         return value not in str(var_value)
     elif operator == "in":
-        return var_value in value
+        try:
+            return var_value in value
+        except TypeError:
+            return False
     elif operator == "not_in":
-        return var_value not in value
+        try:
+            return var_value not in value
+        except TypeError:
+            return False
     elif operator == "between":
         try:
             return value[0] <= float(var_value) <= value[1]
@@ -208,35 +214,33 @@ def resolve_and_accumulate(triggered: list[TriggeredRule]) -> RuleResult:
             )
         elif rule.action == "REQUIRE":
             req_spec = rule.rule_definition.get("requirement", {})
-            r = {
-                "rule_id": rule.rule_id,
-                "rule_name": rule.rule_name,
-                "action": "REQUIRE",
-                "reason": rule.reason,
-                "priority": rule.priority,
-                "satisfied": False,
-                "requirement_type": req_spec.get("type", "unknown"),
-                "parameters": req_spec,
-                "metadata": rule.metadata,
-            }
             for path in rule.blocked_paths or ["__all__"]:
-                requirements[path].append(r)
+                requirements[path].append({
+                    "rule_id": rule.rule_id,
+                    "rule_name": rule.rule_name,
+                    "action": "REQUIRE",
+                    "reason": rule.reason,
+                    "priority": rule.priority,
+                    "satisfied": False,
+                    "requirement_type": req_spec.get("type", "unknown"),
+                    "parameters": dict(req_spec),
+                    "metadata": dict(rule.metadata) if rule.metadata else {},
+                })
         elif rule.action == "GATE":
             gate_spec = rule.rule_definition.get("gate", {})
-            g = {
-                "rule_id": rule.rule_id,
-                "rule_name": rule.rule_name,
-                "action": "GATE",
-                "reason": rule.reason,
-                "priority": rule.priority,
-                "gate_type": gate_spec.get("type", "metric_threshold"),
-                "current": {},
-                "required": gate_spec.get("thresholds", {}),
-                "gap": {},
-                "metadata": rule.metadata,
-            }
             for path in rule.blocked_paths or ["__all__"]:
-                gates[path].append(g)
+                gates[path].append({
+                    "rule_id": rule.rule_id,
+                    "rule_name": rule.rule_name,
+                    "action": "GATE",
+                    "reason": rule.reason,
+                    "priority": rule.priority,
+                    "gate_type": gate_spec.get("type", "metric_threshold"),
+                    "current": {},
+                    "required": dict(gate_spec.get("thresholds", {})),
+                    "gap": {},
+                    "metadata": dict(rule.metadata) if rule.metadata else {},
+                })
 
     return RuleResult(
         violations=dict(violations),
@@ -264,7 +268,9 @@ def resolve_requirements(result: RuleResult, variables: dict) -> RuleResult:
 
                 passed = False
                 try:
-                    if op == "greater_than_or_equal_to":
+                    if op == "greater_than":
+                        passed = float(actual) > float(threshold)
+                    elif op == "greater_than_or_equal_to":
                         passed = float(actual) >= float(threshold)
                     elif op == "equal_to":
                         passed = actual == threshold

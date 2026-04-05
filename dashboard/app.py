@@ -276,7 +276,7 @@ with tab1:
                             f'<div style="display:inline-block;background:{color};'
                             f'color:#fff;padding:3px 10px;border-radius:4px;'
                             f'font-weight:600;margin-right:8px;">{html_escape(status.upper())}</div>'
-                            f'<b>{html_escape(str(p["path_code"]))}</b>{html_escape(str(inv_text))}',
+                            f'<b>{html_escape(str(p.get("path_code", "?")))}</b>{html_escape(str(inv_text))}',
                             unsafe_allow_html=True,
                         )
                         # Show violations
@@ -524,7 +524,7 @@ with tab4:
                     st.markdown(
                         f'&nbsp;&nbsp;<span style="background:{color};color:#fff;'
                         f'padding:2px 8px;border-radius:3px;font-size:0.85em;">'
-                        f'{html_escape(status.upper())}</span> **{html_escape(str(p["path_code"]))}**',
+                        f'{html_escape(status.upper())}</span> **{html_escape(str(p.get("path_code", "?")))}**',
                         unsafe_allow_html=True,
                     )
                 for w in result.get("warnings", []):
