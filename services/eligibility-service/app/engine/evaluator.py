@@ -193,7 +193,7 @@ def resolve_and_accumulate(triggered: list[TriggeredRule]) -> RuleResult:
                 "priority": rule.priority,
                 "metadata": rule.metadata,
             }
-            for path in rule.blocked_paths:
+            for path in rule.blocked_paths or ["__all__"]:
                 violations[path].append(v)
         elif rule.action == "WARN":
             warnings.append(

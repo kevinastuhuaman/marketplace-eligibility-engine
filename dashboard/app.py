@@ -816,9 +816,13 @@ with tab4:
                                 "delta": -50,
                             },
                         )
-                    if depl_result:
-                        new_qty = depl_result.get("new_available_qty", "?")
+                    if depl_result and depl_result.get("new_available_qty") is not None:
+                        new_qty = depl_result["new_available_qty"]
                         st.success(
                             f"Inventory depleted. New available qty: {new_qty}. "
                             "Now click 'Check Milk' again to see it become not eligible."
+                        )
+                    elif depl_result:
+                        st.warning(
+                            "Inventory event was recorded, but no inventory position was updated."
                         )
