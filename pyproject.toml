@@ -1,0 +1,22 @@
+[project]
+name = "walmart-transactability"
+version = "0.1.0"
+description = "Walmart-scale transactability engine"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "httpx>=0.28.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+markers = [
+    "integration: tests that require live Docker stack (docker compose up + seed)",
+]
