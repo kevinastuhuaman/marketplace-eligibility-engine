@@ -13,6 +13,13 @@ class SellerCreate(BaseModel):
     total_orders: int = 0
 
 
+class MetricsUpdate(BaseModel):
+    defect_rate: Decimal | None = None
+    return_rate: Decimal | None = None
+    on_time_rate: Decimal | None = None
+    total_orders: int | None = None
+
+
 class OfferCreate(BaseModel):
     item_id: UUID
     active: bool = True

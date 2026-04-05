@@ -7,7 +7,7 @@ from sqlalchemy import select, and_
 from app.db import get_db
 from app.models.sellers import Seller
 from app.models.offers import SellerOffer
-from app.schemas.sellers import SellerCreate, OfferCreate
+from app.schemas.sellers import SellerCreate, OfferCreate, MetricsUpdate
 
 router = APIRouter()
 
@@ -84,15 +84,58 @@ async def create_seller(
     return {"seller_id": seller.seller_id, "name": seller.name}
 
 
+@router.put("/v1/sellers/{seller_id}/metrics")
+async def update_metrics(
+    seller_id: UUID, payload: MetricsUpdate, request: Request,
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(Seller).where(Seller.seller_id == seller_id))
+    seller = result.scalar_one_or_none()
+    if not seller:
+        raise HTTPException(status_code=404, detail="Seller not found")
+    if payload.defect_rate is not None:
+        seller.defect_rate = payload.defect_rate
+    if payload.return_rate is not None:
+        seller.return_rate = payload.return_rate
+    if payload.on_time_rate is not None:
+        seller.on_time_rate = payload.on_time_rate
+    if payload.total_orders is not None:
+        seller.total_orders = payload.total_orders
+    await db.commit()
+    await db.refresh(seller)
+
+    publisher = getattr(request.app.state, "stream_publisher", None)
+    if publisher:
+        await publisher.publish("metrics_updated", {
+            "seller_id": str(seller.seller_id),
+            "defect_rate": float(seller.defect_rate),
+            "return_rate": float(seller.return_rate),
+            "on_time_rate": float(seller.on_time_rate),
+            "total_orders": seller.total_orders,
+        })
+
+    return {"seller_id": seller.seller_id, "status": "updated"}
+
+
 @router.post("/v1/sellers/{seller_id}/offers", status_code=201)
 async def create_offer(
-    seller_id: UUID, payload: OfferCreate, db: AsyncSession = Depends(get_db)
+    seller_id: UUID, payload: OfferCreate, request: Request,
+    db: AsyncSession = Depends(get_db),
 ):
     offer = SellerOffer(
         seller_id=seller_id, item_id=payload.item_id, active=payload.active
     )
     db.add(offer)
     await db.commit()
+
+    publisher = getattr(request.app.state, "stream_publisher", None)
+    if publisher:
+        await publisher.publish("offer_activated", {
+            "seller_id": str(seller_id),
+            "item_id": str(payload.item_id),
+            "active": payload.active,
+        })
+
     return {
         "seller_id": str(seller_id),
         "item_id": str(payload.item_id),

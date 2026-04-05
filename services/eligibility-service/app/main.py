@@ -7,7 +7,7 @@ from fastapi import FastAPI
 
 from app.config import settings
 from app.api.routes import router
-from shared.redis_streams import StreamConsumer
+from shared.redis_streams import StreamConsumer, StreamPublisher
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +29,10 @@ async def lifespan(app: FastAPI):
     seller_consumer = StreamConsumer(
         app.state.redis, "seller:state_changes",
         "eligibility-cg", "eligibility-1"
+    )
+
+    app.state.stream_publisher = StreamPublisher(
+        app.state.redis, "eligibility:evaluations"
     )
 
     inv_task = asyncio.create_task(inv_consumer.consume(handle_event))

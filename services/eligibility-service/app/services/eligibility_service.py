@@ -1,7 +1,9 @@
 """Eligibility evaluation orchestrator. Makes cross-service calls, runs rules, returns result."""
 import time
 from uuid import UUID
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+
+PST = timezone(timedelta(hours=-7))
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_
@@ -185,7 +187,7 @@ async def evaluate(request_data: dict, db: AsyncSession) -> dict:
 
     overall_eligible = any(p["eligible"] for p in path_results)
     elapsed_ms = int((time.perf_counter() - start) * 1000)
-    now = datetime.now(timezone.utc)
+    now = datetime.now(PST)
 
     response = {
         "item_id": str(item_id),
@@ -286,5 +288,5 @@ def _error_response(item_id, market_code, timestamp, start, errors):
         "rules_evaluated": 0,
         "rules_suppressed": 0,
         "evaluation_ms": elapsed_ms,
-        "evaluated_at": datetime.now(timezone.utc).isoformat(),
+        "evaluated_at": datetime.now(PST).isoformat(),
     }

@@ -227,7 +227,7 @@ SELLERS: list[dict[str, Any]] = [
 # Maps seller UUID -> list of SKUs they offer on marketplace
 SELLER_OFFERS: dict[str, list[str]] = {
     ACME_WINES_SELLER_ID: ["ALC-001", "ALC-002", "ALC-003"],
-    TECHGEAR_SELLER_ID: ["ELEC-001", "ELEC-002"],
+    TECHGEAR_SELLER_ID: ["ELEC-001", "ELEC-002", "FIRE-002"],
     NEWSELLER_SELLER_ID: ["ELEC-001", "TOY-001", "ALC-002"],
     CHEMSUPPLY_SELLER_ID: ["CHEM-001", "CHEM-002"],
 }

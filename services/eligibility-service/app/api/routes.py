@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_db
@@ -23,11 +23,27 @@ router = APIRouter()
 async def evaluate_eligibility(
     request: EligibilityRequest,
     response: Response,
+    raw_request: Request,
     db: AsyncSession = Depends(get_db),
 ):
     try:
         request_data = json.loads(request.model_dump_json())
         result = await evaluate(request_data, db)
+
+        # Publish evaluation event to Redis
+        publisher = getattr(raw_request.app.state, "stream_publisher", None)
+        if publisher and not result.get("errors"):
+            try:
+                await publisher.publish("evaluation_completed", {
+                    "item_id": result.get("item_id"),
+                    "market_code": result.get("market_code"),
+                    "eligible": result.get("eligible"),
+                    "rules_evaluated": result.get("rules_evaluated"),
+                    "evaluation_ms": result.get("evaluation_ms"),
+                })
+            except Exception:
+                pass  # Don't fail the response if stream publish fails
+
         return result
     except httpx.HTTPStatusError as e:
         response.status_code = 503
@@ -36,11 +52,11 @@ async def evaluate_eligibility(
             "detail": str(e),
             "retry_after_seconds": 5,
         }
-    except httpx.ConnectError as e:
+    except (httpx.ConnectError, httpx.TimeoutException) as e:
         response.status_code = 503
         return {
             "error": "service_unavailable",
-            "detail": f"Downstream service unreachable: {e}",
+            "detail": f"Downstream service timeout or unreachable: {e}",
             "retry_after_seconds": 5,
         }
 

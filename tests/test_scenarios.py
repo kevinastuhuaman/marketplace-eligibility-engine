@@ -251,14 +251,15 @@ class TestScenario5Rifle:
     def test_rifle_marketplace_3p_blocked(self, client, items):
         """Firearms are prohibited on the 3P marketplace regardless."""
         rifle = items["FIRE-002"]
-        # Use a seller to trigger marketplace path evaluation
-        # NewSeller offers ELEC-001 not FIRE-002, so this should error as
-        # "Seller does not offer this item" -- confirming 3P is not possible.
+        # TechGear Pro offers FIRE-002 on marketplace, so the evaluation
+        # actually reaches the marketplace_firearms_prohibition rule.
         result = evaluate(
             client, rifle["item_id"], "US-TX", "TX", "75201",
-            seller_id=NEWSELLER_SELLER_ID,
+            seller_id=TECHGEAR_SELLER_ID,
         )
         assert result["eligible"] is False
+        violations = [v["rule_name"] for p in result["paths"] for v in p["violations"]]
+        assert "marketplace_firearms_prohibition" in violations
 
 
 # ===================================================================
