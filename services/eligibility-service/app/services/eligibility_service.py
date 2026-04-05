@@ -262,17 +262,20 @@ async def _load_matching_rules(
     # match items whose category_path is equal to or a descendant of one of the
     # rule's category paths (mimics ltree <@ semantics).
     item_cat = item_data.get("category_path", "")
-    if item_cat:
-        filtered = []
-        for rule in rules:
-            if rule.category_paths is None:
-                filtered.append(rule)
-            else:
-                for rcp in rule.category_paths:
-                    if item_cat == rcp or item_cat.startswith(rcp + "."):
-                        filtered.append(rule)
-                        break
-        rules = filtered
+    filtered = []
+    for rule in rules:
+        if rule.category_paths is None:
+            # Rule has no category scope — applies to all items
+            filtered.append(rule)
+        elif not item_cat:
+            # Item has no category — skip category-scoped rules
+            continue
+        else:
+            for rcp in rule.category_paths:
+                if item_cat == rcp or item_cat.startswith(rcp + "."):
+                    filtered.append(rule)
+                    break
+    rules = filtered
 
     return rules
 
