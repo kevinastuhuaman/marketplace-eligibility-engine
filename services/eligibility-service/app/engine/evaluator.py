@@ -278,7 +278,8 @@ def resolve_requirements(result: RuleResult, variables: dict) -> RuleResult:
 
 def determine_path_status(path_code: str, result: RuleResult) -> tuple[str, bool]:
     """Determine path status and eligibility."""
-    if path_code in result.violations and result.violations[path_code]:
+    path_violations = result.violations.get(path_code, []) + result.violations.get("__all__", [])
+    if path_violations:
         return "blocked", False
 
     path_gates = result.gates.get(path_code, []) + result.gates.get("__all__", [])

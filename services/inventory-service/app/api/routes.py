@@ -134,7 +134,7 @@ async def create_event(
     await db.commit()
 
     # Publish to Redis Stream
-    publisher = request.app.state.stream_publisher
+    publisher = getattr(request.app.state, "stream_publisher", None)
     if publisher and new_qty is not None:
         event_type = "stock_depleted" if new_qty <= 0 else "stock_updated"
         await publisher.publish(event_type, {

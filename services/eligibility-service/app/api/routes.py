@@ -15,6 +15,7 @@ from sqlalchemy import select
 
 import httpx
 import json
+from tenacity import RetryError
 
 router = APIRouter()
 
@@ -57,6 +58,13 @@ async def evaluate_eligibility(
         return {
             "error": "service_unavailable",
             "detail": f"Downstream service timeout or unreachable: {e}",
+            "retry_after_seconds": 5,
+        }
+    except RetryError as e:
+        response.status_code = 503
+        return {
+            "error": "service_unavailable",
+            "detail": f"Downstream service failed after retries: {e}",
             "retry_after_seconds": 5,
         }
 

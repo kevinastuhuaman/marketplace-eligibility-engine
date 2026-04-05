@@ -1,9 +1,10 @@
 """Eligibility evaluation orchestrator. Makes cross-service calls, runs rules, returns result."""
 import time
 from uuid import UUID
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
-PST = timezone(timedelta(hours=-7))
+PACIFIC = ZoneInfo("America/Los_Angeles")
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, or_
@@ -176,7 +177,8 @@ async def evaluate(request_data: dict, db: AsyncSession) -> dict:
                 "path_code": fp.path_code,
                 "eligible": eligible,
                 "status": status,
-                "violations": result.violations.get(fp.path_code, []),
+                "violations": result.violations.get(fp.path_code, [])
+                + result.violations.get("__all__", []),
                 "requirements": result.requirements.get(fp.path_code, [])
                 + result.requirements.get("__all__", []),
                 "gates": result.gates.get(fp.path_code, [])
@@ -187,7 +189,7 @@ async def evaluate(request_data: dict, db: AsyncSession) -> dict:
 
     overall_eligible = any(p["eligible"] for p in path_results)
     elapsed_ms = int((time.perf_counter() - start) * 1000)
-    now = datetime.now(PST)
+    now = datetime.now(PACIFIC)
 
     response = {
         "item_id": str(item_id),
@@ -288,5 +290,5 @@ def _error_response(item_id, market_code, timestamp, start, errors):
         "rules_evaluated": 0,
         "rules_suppressed": 0,
         "evaluation_ms": elapsed_ms,
-        "evaluated_at": datetime.now(PST).isoformat(),
+        "evaluated_at": datetime.now(PACIFIC).isoformat(),
     }

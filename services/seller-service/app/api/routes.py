@@ -73,7 +73,7 @@ async def create_seller(
     await db.refresh(seller)
 
     # Publish to Redis Stream
-    publisher = request.app.state.stream_publisher
+    publisher = getattr(request.app.state, "stream_publisher", None)
     if publisher:
         await publisher.publish("seller_created", {
             "seller_id": str(seller.seller_id),
