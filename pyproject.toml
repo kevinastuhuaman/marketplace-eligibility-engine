@@ -1,0 +1,12 @@
+[project]
+name = "walmart-transactability"
+version = "0.1.0"
+description = "Walmart-scale transactability engine"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
