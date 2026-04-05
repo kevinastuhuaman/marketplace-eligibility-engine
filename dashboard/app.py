@@ -13,6 +13,7 @@ import json
 import os
 import time
 from datetime import datetime, timezone
+from html import escape as html_escape
 
 import httpx
 import redis
@@ -274,8 +275,8 @@ with tab1:
                         st.markdown(
                             f'<div style="display:inline-block;background:{color};'
                             f'color:#fff;padding:3px 10px;border-radius:4px;'
-                            f'font-weight:600;margin-right:8px;">{status.upper()}</div>'
-                            f'<b>{p["path_code"]}</b>{inv_text}',
+                            f'font-weight:600;margin-right:8px;">{html_escape(status.upper())}</div>'
+                            f'<b>{html_escape(str(p["path_code"]))}</b>{html_escape(str(inv_text))}',
                             unsafe_allow_html=True,
                         )
                         # Show violations
@@ -428,9 +429,9 @@ with tab2:
                         parsed = raw
                     st.markdown(
                         f'<div class="event-row">'
-                        f'<span class="ts">{ts}</span> '
-                        f'<span class="type">{evt}</span> '
-                        f"{json.dumps(parsed, indent=None)}</div>",
+                        f'<span class="ts">{html_escape(str(ts))}</span> '
+                        f'<span class="type">{html_escape(str(evt))}</span> '
+                        f"{html_escape(json.dumps(parsed, indent=None))}</div>",
                         unsafe_allow_html=True,
                     )
             else:
@@ -468,9 +469,9 @@ with tab3:
                             detail = str(raw)
                         st.markdown(
                             f'<div class="event-row">'
-                            f'<span class="ts">{msg_id}</span> '
-                            f'<span class="type">{evt}</span> '
-                            f"{detail}</div>",
+                            f'<span class="ts">{html_escape(str(msg_id))}</span> '
+                            f'<span class="type">{html_escape(str(evt))}</span> '
+                            f"{html_escape(str(detail))}</div>",
                             unsafe_allow_html=True,
                         )
                 else:
@@ -523,7 +524,7 @@ with tab4:
                     st.markdown(
                         f'&nbsp;&nbsp;<span style="background:{color};color:#fff;'
                         f'padding:2px 8px;border-radius:3px;font-size:0.85em;">'
-                        f'{status.upper()}</span> **{p["path_code"]}**',
+                        f'{html_escape(status.upper())}</span> **{html_escape(str(p["path_code"]))}**',
                         unsafe_allow_html=True,
                     )
                 for w in result.get("warnings", []):
