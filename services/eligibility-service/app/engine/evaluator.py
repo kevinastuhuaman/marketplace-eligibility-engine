@@ -229,7 +229,7 @@ def resolve_and_accumulate(triggered: list[TriggeredRule]) -> RuleResult:
         gates=dict(gates),
         warnings=warnings,
         conflict_resolutions=conflict_resolutions,
-        rules_evaluated=len(triggered) + len(suppressed),
+        rules_evaluated=len(triggered),
         rules_suppressed=len(suppressed),
     )
 

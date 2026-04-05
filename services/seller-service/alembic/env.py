@@ -34,8 +34,10 @@ def do_run_migrations(connection):
 
 
 async def run_migrations_online():
+    import os
+    url = os.environ.get("DATABASE_URL", config.get_main_option("sqlalchemy.url"))
     connectable = create_async_engine(
-        config.get_main_option("sqlalchemy.url"),
+        url,
         poolclass=pool.NullPool,
     )
     async with connectable.connect() as connection:

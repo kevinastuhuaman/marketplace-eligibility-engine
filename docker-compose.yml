@@ -36,7 +36,7 @@ services:
     ports:
       - "8001:8000"
     environment:
-      DATABASE_URL: "postgresql+asyncpg://postgres:postgres@postgres:5432/transactability?options=-c%20search_path=item_svc"
+      DATABASE_URL: "postgresql+asyncpg://postgres:postgres@postgres:5432/transactability"
     depends_on:
       postgres:
         condition: service_healthy
@@ -54,7 +54,7 @@ services:
     ports:
       - "8002:8000"
     environment:
-      DATABASE_URL: "postgresql+asyncpg://postgres:postgres@postgres:5432/transactability?options=-c%20search_path=eligibility_svc"
+      DATABASE_URL: "postgresql+asyncpg://postgres:postgres@postgres:5432/transactability"
       REDIS_URL: "redis://redis:6379"
       ITEM_SERVICE_URL: "http://item-service:8000"
       INVENTORY_SERVICE_URL: "http://inventory-service:8000"
@@ -84,7 +84,7 @@ services:
     ports:
       - "8003:8000"
     environment:
-      DATABASE_URL: "postgresql+asyncpg://postgres:postgres@postgres:5432/transactability?options=-c%20search_path=inventory_svc"
+      DATABASE_URL: "postgresql+asyncpg://postgres:postgres@postgres:5432/transactability"
       REDIS_URL: "redis://redis:6379"
     depends_on:
       postgres:
@@ -105,7 +105,7 @@ services:
     ports:
       - "8004:8000"
     environment:
-      DATABASE_URL: "postgresql+asyncpg://postgres:postgres@postgres:5432/transactability?options=-c%20search_path=seller_svc"
+      DATABASE_URL: "postgresql+asyncpg://postgres:postgres@postgres:5432/transactability"
       REDIS_URL: "redis://redis:6379"
     depends_on:
       postgres:
@@ -125,6 +125,7 @@ services:
       - "80:80"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - /dev/null:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       item-service:
         condition: service_healthy

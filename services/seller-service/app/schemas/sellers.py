@@ -14,6 +14,5 @@ class SellerCreate(BaseModel):
 
 
 class OfferCreate(BaseModel):
-    seller_id: UUID
     item_id: UUID
     active: bool = True

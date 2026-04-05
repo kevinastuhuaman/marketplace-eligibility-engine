@@ -1,7 +1,7 @@
 import uuid
 
-from sqlalchemy import Column, String, Text, ARRAY
-from sqlalchemy.dialects.postgresql import UUID, JSONB, TIMESTAMP
+from sqlalchemy import Column, String, Text
+from sqlalchemy.dialects.postgresql import UUID, JSONB, TIMESTAMP, ARRAY
 from sqlalchemy.sql import func
 from sqlalchemy_utils import LtreeType
 

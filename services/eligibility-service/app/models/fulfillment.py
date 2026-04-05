@@ -1,5 +1,4 @@
-from sqlalchemy import Column, String, Text, Integer, Boolean
-from sqlalchemy.dialects.postgresql import DECIMAL
+from sqlalchemy import Column, String, Text, Integer, Boolean, Numeric
 from app.db import Base
 
 
@@ -12,7 +11,7 @@ class FulfillmentPath(Base):
     display_name = Column(Text, nullable=False)
     owner = Column(String(5), nullable=False)  # '1p' or '3p'
     requires_inventory = Column(Boolean, default=True)
-    max_weight_lbs = Column(DECIMAL, nullable=True)
+    max_weight_lbs = Column(Numeric, nullable=True)
 
 
 class MarketFulfillment(Base):

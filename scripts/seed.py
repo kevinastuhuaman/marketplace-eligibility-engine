@@ -136,6 +136,7 @@ async def seed():
                     }
                 },
                 "reason": "Utah prohibits alcohol delivery (Utah Code 32B-1-201)",
+                "effective_from": "2020-01-01T00:00:00-07:00",
                 "metadata": {
                     "regulation": "Utah Code 32B-1-201",
                     "jurisdiction": "state",

@@ -9,5 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY shared/ /app/shared/
 COPY seller-service/app/ /app/app/
+COPY seller-service/alembic.ini /app/alembic.ini
+COPY seller-service/alembic/ /app/alembic/
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
