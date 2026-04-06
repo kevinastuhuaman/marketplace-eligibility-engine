@@ -9,9 +9,11 @@ SCOPE_SCORE = {
     "item": 50,
     "seller": 40,
     "category": 30,
+    "product": 25,
     "geographic": 20,
-    "temporal": 10,
     "quantity": 15,
+    "seasonal": 12,
+    "temporal": 10,
 }
 
 

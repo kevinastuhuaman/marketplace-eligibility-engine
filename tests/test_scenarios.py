@@ -39,14 +39,6 @@ def items(client):
     return {item["sku"]: item for item in data}
 
 
-@pytest.fixture(scope="module")
-def fulfillment_paths(client):
-    """Load fulfillment path IDs so we can reference them for inventory events."""
-    r = client.get("/v1/fulfillment-paths")
-    if r.status_code != 200:
-        return {}
-    return {p["path_code"]: p["path_id"] for p in r.json()}
-
 
 # ---------------------------------------------------------------------------
 # Helpers
