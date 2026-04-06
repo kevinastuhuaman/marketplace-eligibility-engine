@@ -167,6 +167,8 @@ services:
     depends_on:
       eligibility-service:
         condition: service_healthy
+      nginx:
+        condition: service_started
     profiles: ["seed"]
     restart: "no"
 
@@ -184,6 +186,8 @@ services:
     depends_on:
       eligibility-service:
         condition: service_healthy
+      nginx:
+        condition: service_started
     profiles: ["test"]
     restart: "no"
 
