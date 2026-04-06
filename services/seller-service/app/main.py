@@ -10,6 +10,12 @@ from shared.redis_streams import StreamPublisher
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Create tables on startup
+    from app.db import engine, Base
+    from app.models import sellers, offers  # noqa: F401
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
     # Connect to Redis
     app.state.redis = aioredis.from_url(settings.redis_url, decode_responses=True)
     app.state.stream_publisher = StreamPublisher(

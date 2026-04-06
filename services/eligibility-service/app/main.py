@@ -18,6 +18,12 @@ async def handle_event(event_type: str, data: dict):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Create tables on startup
+    from app.db import engine, Base
+    from app.models import compliance, fulfillment, audit  # noqa: F401
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
     # Connect to Redis (no decode_responses — StreamConsumer expects bytes)
     app.state.redis = aioredis.from_url(settings.redis_url)
 
