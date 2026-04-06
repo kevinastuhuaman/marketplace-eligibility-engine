@@ -12,4 +12,4 @@ COPY seller-service/app/ /app/app/
 COPY seller-service/alembic.ini /app/alembic.ini
 COPY seller-service/alembic/ /app/alembic/
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]

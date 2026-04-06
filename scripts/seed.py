@@ -3,11 +3,12 @@ Run with: python -m scripts.seed
 Requires all services to be running (docker compose up).
 """
 import asyncio
+import os
 from typing import Any
 
 import httpx
 
-BASE_URL = "http://localhost"
+BASE_URL = os.environ.get("SEED_BASE_URL", "http://localhost")
 EFFECTIVE_FROM = "2020-01-01T00:00:00-07:00"
 
 # ---------------------------------------------------------------------------
