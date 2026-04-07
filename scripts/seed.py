@@ -858,14 +858,20 @@ async def seed_items(client: httpx.AsyncClient) -> dict[str, str]:
         payload = dict(item)
         payload["display_metadata"] = DISPLAY_METADATA.get(item["sku"])
         r = await client.post("/v1/items", json=payload)
-        if r.status_code not in (200, 201):
-            print(f"  [FATAL] Failed to create item {item['sku']}: "
-                  f"HTTP {r.status_code} — {r.text}")
-            sys.exit(1)
-        data = r.json()
-        item_id = data.get("item_id", "?")
-        sku_to_id[item["sku"]] = str(item_id)
-        print(f"  [OK] {item['sku']}: {item['name']} -> {item_id}")
+        if r.status_code == 201:
+            data = r.json()
+            item_id = data.get("item_id", "?")
+            sku_to_id[item["sku"]] = str(item_id)
+            print(f"  [OK] {item['sku']}: {item['name']} -> {item_id}")
+        else:
+            print(f"  [SKIP {r.status_code}] {item['sku']}: {item['name']} (already exists?)")
+    # If any items were skipped, resolve SKU->ID from the API
+    if len(sku_to_id) < len(ITEMS):
+        all_r = await client.get("/v1/items")
+        if all_r.status_code == 200:
+            for it in all_r.json():
+                if it["sku"] not in sku_to_id:
+                    sku_to_id[it["sku"]] = str(it["item_id"])
     return sku_to_id
 
 
@@ -875,18 +881,24 @@ async def seed_fulfillment_paths(client: httpx.AsyncClient) -> dict[str, int]:
     code_to_id: dict[str, int] = {}
     for path in FULFILLMENT_PATHS:
         r = await client.post("/v1/fulfillment-paths", json=path)
-        if r.status_code not in (200, 201):
-            print(f"  [FATAL] Failed to create path {path['path_code']}: "
-                  f"HTTP {r.status_code} — {r.text}")
-            sys.exit(1)
-        data = r.json()
-        path_id = data.get("path_id", "?")
-        code_to_id[path["path_code"]] = path_id
-        weight = path.get("max_weight_lbs") or "unlimited"
-        print(
-            f"  [OK] {path['path_code']} ({path['owner']}, "
-            f"max_weight={weight}) -> path_id={path_id}"
-        )
+        if r.status_code == 201:
+            data = r.json()
+            path_id = data.get("path_id", "?")
+            code_to_id[path["path_code"]] = path_id
+            weight = path.get("max_weight_lbs") or "unlimited"
+            print(
+                f"  [OK] {path['path_code']} ({path['owner']}, "
+                f"max_weight={weight}) -> path_id={path_id}"
+            )
+        else:
+            print(f"  [SKIP {r.status_code}] {path['path_code']} (already exists?)")
+    # Resolve any missing path IDs
+    if len(code_to_id) < len(FULFILLMENT_PATHS):
+        all_r = await client.get("/v1/fulfillment-paths")
+        if all_r.status_code == 200:
+            for p in all_r.json():
+                if p["path_code"] not in code_to_id:
+                    code_to_id[p["path_code"]] = p["path_id"]
     return code_to_id
 
 

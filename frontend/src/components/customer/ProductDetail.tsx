@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Item } from "../../types/api";
 import { useMarketStore } from "../../store/market-store";
 import { useEvaluationStore } from "../../store/evaluation-store";
@@ -10,10 +10,20 @@ import { EligibilityBadge } from "../shared/StatusBadge";
 
 export function ProductDetail({ item }: { item: Item }) {
   const market = useMarketStore((s) => s.market);
-  const { response, setResponse, isEvaluating, setIsEvaluating, testerMode } = useEvaluationStore();
+  const { response, setResponse, isEvaluating, setIsEvaluating, testerMode, scenarioContext, setScenarioContext } = useEvaluationStore();
   const [sellerId, setSellerId] = useState<string | null>(null);
   const [age, setAge] = useState<number | undefined>(undefined);
   const [quantity, setQuantity] = useState(1);
+
+  // Sync controls when a scenario sets context
+  useEffect(() => {
+    if (scenarioContext) {
+      setSellerId(scenarioContext.sellerId);
+      setAge(scenarioContext.age);
+      setQuantity(scenarioContext.quantity ?? 1);
+      setScenarioContext(null); // consume once
+    }
+  }, [scenarioContext, setScenarioContext]);
 
   const hasAgeRestriction = item.compliance_tags.includes("age_restricted");
   const hasQuantityLimit = item.compliance_tags.includes("quantity_limited");

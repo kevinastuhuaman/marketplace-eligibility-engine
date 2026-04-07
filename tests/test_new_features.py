@@ -218,17 +218,18 @@ def test_items_display_metadata(client):
 
 def test_items_create_with_metadata(client):
     """POST /v1/items with display_metadata persists and returns it."""
+    import uuid
+    unique_sku = f"TEST-META-{uuid.uuid4().hex[:8]}"
     payload = {
-        "sku": "TEST-META-001",
+        "sku": unique_sku,
         "name": "Test Metadata Item",
         "display_metadata": {"price": "9.99", "emoji": "🧪", "description": "Test item"},
     }
     r = client.post("/v1/items", json=payload)
-    # May get 201 (new) or 500 (duplicate if test reruns)
-    if r.status_code == 201:
-        data = r.json()
-        assert data["display_metadata"]["price"] == "9.99"
-        assert data["display_metadata"]["emoji"] == "🧪"
+    assert r.status_code == 201
+    data = r.json()
+    assert data["display_metadata"]["price"] == "9.99"
+    assert data["display_metadata"]["emoji"] == "🧪"
 
 
 # ---------------------------------------------------------------------------

@@ -15,7 +15,7 @@ export function ScenarioStrip() {
   const [activeVariant, setActiveVariant] = useState<number>(0);
   const navigate = useNavigate();
   const setMarket = useMarketStore((s) => s.setMarket);
-  const { setResponse, setIsEvaluating, testerMode } = useEvaluationStore();
+  const { setResponse, setIsEvaluating, testerMode, setScenarioContext } = useEvaluationStore();
   const queryClient = useQueryClient();
 
   const { data: scenarios } = useQuery({
@@ -37,6 +37,13 @@ export function ScenarioStrip() {
       // Set market
       const market = MARKETS.find((m) => m.code === variant.market_code);
       if (market) setMarket(market);
+
+      // Sync controls so ProductDetail reflects the scenario inputs
+      setScenarioContext({
+        sellerId: variant.seller_id ?? null,
+        age: variant.context?.customer_age,
+        quantity: variant.context?.requested_quantity,
+      });
 
       // Navigate to product
       navigate(`/product/${item.item_id}`);
