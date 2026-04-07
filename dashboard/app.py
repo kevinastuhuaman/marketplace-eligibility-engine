@@ -804,25 +804,33 @@ with tab4:
         with s10b:
             if st.button("Deplete Milk Inventory (delta=-50)", key="s10b"):
                 if "GROC-001" in sku_map:
-                    with st.spinner("Depleting inventory..."):
-                        depl_result = api_post(
-                            "/v1/inventory/events",
-                            {
-                                "item_id": sku_map["GROC-001"],
-                                "fulfillment_node": "FC-DAL-01",
-                                "event_type": "adjustment",
-                                "path_id": 1,
-                                "seller_id": "00000000-0000-0000-0000-000000000001",
-                                "delta": -50,
-                            },
-                        )
-                    if depl_result and depl_result.get("new_available_qty") is not None:
-                        new_qty = depl_result["new_available_qty"]
+                    with st.spinner("Depleting inventory on all fulfillment paths..."):
+                        depleted_paths = 0
+                        for path_id in [1, 2, 3]:  # ship_to_home, pickup, ship_from_store
+                            depl_result = api_post(
+                                "/v1/inventory/events",
+                                {
+                                    "item_id": sku_map["GROC-001"],
+                                    "fulfillment_node": "FC-DAL-01",
+                                    "event_type": "adjustment",
+                                    "path_id": path_id,
+                                    "seller_id": "00000000-0000-0000-0000-000000000001",
+                                    "delta": -50,
+                                },
+                            )
+                            if depl_result and depl_result.get("new_available_qty") is not None:
+                                depleted_paths += 1
+                    if depleted_paths == 3:
                         st.success(
-                            f"Inventory depleted. New available qty: {new_qty}. "
+                            "Inventory depleted on all 3 fulfillment paths. "
                             "Now click 'Check Milk' again to see it become not eligible."
                         )
-                    elif depl_result:
+                    elif depleted_paths > 0:
                         st.warning(
-                            "Inventory event was recorded, but no inventory position was updated."
+                            f"Inventory depleted on {depleted_paths}/3 paths. "
+                            "Some paths may still show stock."
+                        )
+                    else:
+                        st.warning(
+                            "Inventory events were recorded, but no positions were updated."
                         )
