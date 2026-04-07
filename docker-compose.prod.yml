@@ -128,10 +128,11 @@ services:
       seller-service:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost/health >/dev/null"]
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/health >/dev/null"]
       interval: 5s
       timeout: 5s
       retries: 5
+      start_period: 5s
     restart: unless-stopped
 
   dashboard:
