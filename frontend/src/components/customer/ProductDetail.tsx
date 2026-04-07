@@ -10,7 +10,7 @@ import { EligibilityBadge } from "../shared/StatusBadge";
 
 export function ProductDetail({ item }: { item: Item }) {
   const market = useMarketStore((s) => s.market);
-  const { response, setResponse, isEvaluating, setIsEvaluating } = useEvaluationStore();
+  const { response, setResponse, isEvaluating, setIsEvaluating, testerMode } = useEvaluationStore();
   const [sellerId, setSellerId] = useState<string | null>(null);
   const [age, setAge] = useState<number | undefined>(undefined);
   const [quantity, setQuantity] = useState(1);
@@ -21,17 +21,20 @@ export function ProductDetail({ item }: { item: Item }) {
   async function handleEvaluate() {
     setIsEvaluating(true);
     try {
-      const result = await evaluateEligibility({
-        item_id: item.item_id,
-        market_code: market.code,
-        customer_location: { state: market.state, zip: market.zip },
-        seller_id: sellerId,
-        timestamp: new Date().toISOString(),
-        context: {
-          customer_age: age,
-          requested_quantity: hasQuantityLimit ? quantity : undefined,
+      const result = await evaluateEligibility(
+        {
+          item_id: item.item_id,
+          market_code: market.code,
+          customer_location: { state: market.state, zip: market.zip },
+          seller_id: sellerId,
+          timestamp: new Date().toISOString(),
+          context: {
+            customer_age: age,
+            requested_quantity: hasQuantityLimit ? quantity : undefined,
+          },
         },
-      });
+        testerMode,
+      );
       setResponse(result);
     } finally {
       setIsEvaluating(false);

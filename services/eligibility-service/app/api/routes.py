@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Query, Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_db
@@ -26,7 +26,7 @@ async def evaluate_eligibility(
     response: Response,
     raw_request: Request,
     db: AsyncSession = Depends(get_db),
-    debug: bool = False,
+    debug: bool = Query(False),
 ):
     try:
         request_data = json.loads(request.model_dump_json())

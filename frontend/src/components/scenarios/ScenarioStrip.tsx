@@ -15,7 +15,7 @@ export function ScenarioStrip() {
   const [activeVariant, setActiveVariant] = useState<number>(0);
   const navigate = useNavigate();
   const setMarket = useMarketStore((s) => s.setMarket);
-  const { setResponse, setIsEvaluating } = useEvaluationStore();
+  const { setResponse, setIsEvaluating, testerMode } = useEvaluationStore();
   const queryClient = useQueryClient();
 
   const { data: scenarios } = useQuery({
@@ -42,14 +42,17 @@ export function ScenarioStrip() {
       navigate(`/product/${item.item_id}`);
 
       // Evaluate
-      const result = await evaluateEligibility({
-        item_id: item.item_id,
-        market_code: variant.market_code,
-        customer_location: { state: variant.state, zip: variant.zip },
-        seller_id: variant.seller_id ?? variant.sellers?.[0]?.id ?? null,
-        timestamp: variant.timestamp ?? new Date().toISOString(),
-        context: variant.context,
-      });
+      const result = await evaluateEligibility(
+        {
+          item_id: item.item_id,
+          market_code: variant.market_code,
+          customer_location: { state: variant.state, zip: variant.zip },
+          seller_id: variant.seller_id ?? null,
+          timestamp: variant.timestamp ?? new Date().toISOString(),
+          context: variant.context,
+        },
+        testerMode,
+      );
       setResponse(result);
     } finally {
       setIsEvaluating(false);

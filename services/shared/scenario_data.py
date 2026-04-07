@@ -74,9 +74,7 @@ SCENARIOS: list[dict] = [
                 "zip": "75201",
                 "timestamp": "2026-07-04T14:00:00-05:00",
                 "expected_outcome": "Shipping blocked, pickup allowed",
-                "sellers": [
-                    {"id": CHEMSUPPLY_SELLER_ID, "name": "ChemSupply Inc"},
-                ],
+                "sellers": [],
                 "context": {},
             },
         ],
@@ -164,10 +162,7 @@ SCENARIOS: list[dict] = [
                 "zip": "75201",
                 "timestamp": "2026-07-04T14:00:00-05:00",
                 "expected_outcome": "1P paths eligible with age verified, 3P blocked",
-                "sellers": [
-                    {"id": TECHGEAR_SELLER_ID, "name": "TechGear Pro"},
-                    {"id": NEWSELLER_SELLER_ID, "name": "NewSeller123"},
-                ],
+                "sellers": [],
                 "context": {"customer_age": 25},
             },
             {
@@ -203,6 +198,7 @@ SCENARIOS: list[dict] = [
                 "zip": "75201",
                 "timestamp": "2026-07-04T14:00:00-05:00",
                 "expected_outcome": "Marketplace gated (4.5% defect > 3% threshold)",
+                "seller_id": CHEMSUPPLY_SELLER_ID,
                 "sellers": [
                     {"id": CHEMSUPPLY_SELLER_ID, "name": "ChemSupply Inc"},
                 ],
@@ -227,6 +223,7 @@ SCENARIOS: list[dict] = [
                 "zip": "80202",
                 "timestamp": "2026-07-04T14:00:00-06:00",
                 "expected_outcome": "Marketplace eligible (trusted tier)",
+                "seller_id": ACME_WINES_SELLER_ID,
                 "sellers": [
                     {"id": ACME_WINES_SELLER_ID, "name": "Acme Wines"},
                 ],
@@ -240,6 +237,7 @@ SCENARIOS: list[dict] = [
                 "zip": "80202",
                 "timestamp": "2026-07-04T14:00:00-06:00",
                 "expected_outcome": "Marketplace gated (new tier, requires trusted+)",
+                "seller_id": NEWSELLER_SELLER_ID,
                 "sellers": [
                     {"id": NEWSELLER_SELLER_ID, "name": "NewSeller123"},
                 ],
@@ -264,6 +262,7 @@ SCENARIOS: list[dict] = [
                 "zip": "75201",
                 "timestamp": "2026-07-04T14:00:00-05:00",
                 "expected_outcome": "Marketplace eligible (trusted tier)",
+                "seller_id": TECHGEAR_SELLER_ID,
                 "sellers": [
                     {"id": TECHGEAR_SELLER_ID, "name": "TechGear Pro"},
                 ],
@@ -277,6 +276,7 @@ SCENARIOS: list[dict] = [
                 "zip": "75201",
                 "timestamp": "2026-07-04T14:00:00-05:00",
                 "expected_outcome": "Marketplace gated (new tier, requires trusted+)",
+                "seller_id": NEWSELLER_SELLER_ID,
                 "sellers": [
                     {"id": NEWSELLER_SELLER_ID, "name": "NewSeller123"},
                 ],
@@ -337,24 +337,9 @@ SCENARIOS: list[dict] = [
                 "sellers": [],
                 "context": {},
             },
-            {
-                "label": "Deplete Milk Inventory (delta=-50)",
-                "item_sku": "GROC-001",
-                "market_code": "US-TX",
-                "state": "TX",
-                "zip": "75201",
-                "timestamp": "2026-07-04T14:00:00-05:00",
-                "expected_outcome": "Not eligible (inventory depleted to 0)",
-                "sellers": [],
-                "context": {},
-                "inventory_action": {
-                    "fulfillment_node": "FC-DAL-01",
-                    "event_type": "adjustment",
-                    "path_id": 1,
-                    "seller_id": "00000000-0000-0000-0000-000000000001",
-                    "delta": -50,
-                },
-            },
+            # Depletion variant is operator-assisted (SSH to server).
+            # The React frontend cannot mutate inventory — mutation endpoints are blocked.
+            # To demo: SSH, POST /v1/inventory/events with delta=-50, then re-evaluate.
         ],
     },
 ]

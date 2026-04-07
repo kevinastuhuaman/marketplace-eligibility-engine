@@ -841,13 +841,12 @@ async def seed_sellers(client: httpx.AsyncClient) -> dict[str, dict]:
     results: dict[str, dict] = {}
     for seller in SELLERS:
         r = await client.post("/v1/sellers", json=seller)
-        if r.status_code not in (200, 201):
-            print(f"  [FATAL] Failed to create seller {seller['name']}: "
-                  f"HTTP {r.status_code} — {r.text}")
-            sys.exit(1)
-        data = r.json()
-        results[seller["seller_id"]] = data
-        print(f"  [OK] {seller['name']} (id={seller['seller_id']})")
+        if r.status_code == 201:
+            results[seller["seller_id"]] = r.json()
+            print(f"  [OK] {seller['name']} (id={seller['seller_id']})")
+        else:
+            results[seller["seller_id"]] = {"seller_id": seller["seller_id"]}
+            print(f"  [SKIP {r.status_code}] {seller['name']} (already exists?)")
     return results
 
 
