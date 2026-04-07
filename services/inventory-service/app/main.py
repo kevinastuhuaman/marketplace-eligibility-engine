@@ -1,3 +1,5 @@
+import asyncio
+import logging
 from contextlib import asynccontextmanager
 
 import redis.asyncio as aioredis
@@ -7,14 +9,24 @@ from app.config import settings
 from app.api.routes import router
 from shared.redis_streams import StreamPublisher
 
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Create tables on startup
+    # Create tables on startup (with retry for DB readiness)
     from app.db import engine, Base
     from app.models import inventory, events  # noqa: F401
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    for attempt in range(1, 4):
+        try:
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+            break
+        except Exception:
+            if attempt == 3:
+                raise
+            logger.warning("DB not ready, retrying in 2s (attempt %d/3)", attempt)
+            await asyncio.sleep(2)
 
     # Connect to Redis
     app.state.redis = aioredis.from_url(settings.redis_url, decode_responses=True)

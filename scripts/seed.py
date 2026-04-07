@@ -4,6 +4,7 @@ Requires all services to be running (docker compose up).
 """
 import asyncio
 import os
+import sys
 from typing import Any
 
 import httpx
@@ -832,10 +833,13 @@ async def seed_sellers(client: httpx.AsyncClient) -> dict[str, dict]:
     results: dict[str, dict] = {}
     for seller in SELLERS:
         r = await client.post("/v1/sellers", json=seller)
+        if r.status_code not in (200, 201):
+            print(f"  [FATAL] Failed to create seller {seller['name']}: "
+                  f"HTTP {r.status_code} — {r.text}")
+            sys.exit(1)
         data = r.json()
         results[seller["seller_id"]] = data
-        status = "OK" if r.status_code == 201 else f"ERR {r.status_code}"
-        print(f"  [{status}] {seller['name']} (id={seller['seller_id']})")
+        print(f"  [OK] {seller['name']} (id={seller['seller_id']})")
     return results
 
 
@@ -845,11 +849,14 @@ async def seed_items(client: httpx.AsyncClient) -> dict[str, str]:
     sku_to_id: dict[str, str] = {}
     for item in ITEMS:
         r = await client.post("/v1/items", json=item)
+        if r.status_code not in (200, 201):
+            print(f"  [FATAL] Failed to create item {item['sku']}: "
+                  f"HTTP {r.status_code} — {r.text}")
+            sys.exit(1)
         data = r.json()
         item_id = data.get("item_id", "?")
         sku_to_id[item["sku"]] = str(item_id)
-        status = "OK" if r.status_code == 201 else f"ERR {r.status_code}"
-        print(f"  [{status}] {item['sku']}: {item['name']} -> {item_id}")
+        print(f"  [OK] {item['sku']}: {item['name']} -> {item_id}")
     return sku_to_id
 
 
@@ -859,13 +866,16 @@ async def seed_fulfillment_paths(client: httpx.AsyncClient) -> dict[str, int]:
     code_to_id: dict[str, int] = {}
     for path in FULFILLMENT_PATHS:
         r = await client.post("/v1/fulfillment-paths", json=path)
+        if r.status_code not in (200, 201):
+            print(f"  [FATAL] Failed to create path {path['path_code']}: "
+                  f"HTTP {r.status_code} — {r.text}")
+            sys.exit(1)
         data = r.json()
         path_id = data.get("path_id", "?")
         code_to_id[path["path_code"]] = path_id
         weight = path.get("max_weight_lbs") or "unlimited"
-        status = "OK" if r.status_code == 201 else f"ERR {r.status_code}"
         print(
-            f"  [{status}] {path['path_code']} ({path['owner']}, "
+            f"  [OK] {path['path_code']} ({path['owner']}, "
             f"max_weight={weight}) -> path_id={path_id}"
         )
     return code_to_id

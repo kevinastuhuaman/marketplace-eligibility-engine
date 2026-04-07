@@ -1,3 +1,5 @@
+import asyncio
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -7,11 +9,22 @@ from app.config import settings
 from app.db import engine, Base
 from app.models import items  # noqa: F401 — register models
 
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    # Create tables on startup (with retry for DB readiness)
+    for attempt in range(1, 4):
+        try:
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+            break
+        except Exception:
+            if attempt == 3:
+                raise
+            logger.warning("DB not ready, retrying in 2s (attempt %d/3)", attempt)
+            await asyncio.sleep(2)
     yield
 
 

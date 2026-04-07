@@ -13,16 +13,37 @@ logger = logging.getLogger(__name__)
 
 
 async def handle_event(event_type: str, data: dict):
-    logger.info(f"[eligibility-consumer] {event_type}: {data}")
+    try:
+        logger.info(f"[eligibility-consumer] {event_type}: {data}")
+    except Exception:
+        logger.exception("Error handling stream event %s", event_type)
+
+
+async def _run_consumer(consumer: StreamConsumer, name: str):
+    """Wrapper that logs exceptions from background consumer tasks."""
+    try:
+        await consumer.consume(handle_event)
+    except asyncio.CancelledError:
+        logger.info("Consumer %s cancelled", name)
+    except Exception:
+        logger.exception("Consumer %s crashed", name)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Create tables on startup
+    # Create tables on startup (with retry for DB readiness)
     from app.db import engine, Base
     from app.models import compliance, fulfillment, audit  # noqa: F401
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    for attempt in range(1, 4):
+        try:
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+            break
+        except Exception:
+            if attempt == 3:
+                raise
+            logger.warning("DB not ready, retrying in 2s (attempt %d/3)", attempt)
+            await asyncio.sleep(2)
 
     # Connect to Redis (no decode_responses — StreamConsumer expects bytes)
     app.state.redis = aioredis.from_url(settings.redis_url)
@@ -41,16 +62,17 @@ async def lifespan(app: FastAPI):
         app.state.redis, "eligibility:evaluations"
     )
 
-    inv_task = asyncio.create_task(inv_consumer.consume(handle_event))
-    seller_task = asyncio.create_task(seller_consumer.consume(handle_event))
+    inv_task = asyncio.create_task(_run_consumer(inv_consumer, "inventory"))
+    seller_task = asyncio.create_task(_run_consumer(seller_consumer, "seller"))
 
     yield
 
-    # Cleanup
+    # Cleanup: stop consumers, cancel tasks, and await them
     inv_consumer.stop()
     seller_consumer.stop()
     inv_task.cancel()
     seller_task.cancel()
+    await asyncio.gather(inv_task, seller_task, return_exceptions=True)
     await app.state.redis.aclose()
 
 
