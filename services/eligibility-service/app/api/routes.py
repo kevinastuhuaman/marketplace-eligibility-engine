@@ -116,6 +116,16 @@ async def list_rules(db: AsyncSession = Depends(get_db)):
     ]
 
 
+@router.get("/v1/fulfillment-paths")
+async def list_paths(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(FulfillmentPath).order_by(FulfillmentPath.path_id))
+    paths = result.scalars().all()
+    return [
+        {"path_id": p.path_id, "path_code": p.path_code, "owner": p.owner}
+        for p in paths
+    ]
+
+
 @router.post("/v1/fulfillment-paths", status_code=201)
 async def create_path(
     payload: FulfillmentPathCreate, db: AsyncSession = Depends(get_db)
