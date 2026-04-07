@@ -4,10 +4,12 @@ Requires: docker compose up + seed script already run.
 Run with: pytest tests/test_scenarios.py -v
 """
 
+import os
+
 import pytest
 import httpx
 
-BASE_URL = "http://localhost"
+BASE_URL = os.environ.get("TEST_BASE_URL", "http://localhost")
 TIMEOUT = 15.0
 
 # Deterministic seller UUIDs from the seed script.
