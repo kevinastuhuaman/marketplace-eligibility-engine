@@ -1251,15 +1251,20 @@ def print_test_commands(sku_to_id: dict[str, str]) -> None:
         f"' | python3 -m json.tool"
     )
     print(
-        f"\n# Deplete inventory via event (delta=-50)"
-        f"\ncurl -s -X POST {BASE_URL}/v1/inventory/events "
-        f'-H "Content-Type: application/json" '
-        f"-d '"
-        f'{{"item_id":"{milk_id}","fulfillment_node":"FC-DAL-01",'
-        f'"event_type":"adjustment","path_id":1,'
-        f'"seller_id":"{WALMART_SELLER_ID}","delta":-50}}'
-        f"' | python3 -m json.tool"
+        f"\n# Deplete inventory via events on ALL 3 1P paths (delta=-50 each)"
     )
+    for pid in [1, 2, 3]:
+        path_name = {1: "ship_to_home", 2: "pickup", 3: "ship_from_store"}[pid]
+        print(
+            f"\ncurl -s -X POST {BASE_URL}/v1/inventory/events "
+            f'-H "Content-Type: application/json" '
+            f"-d '"
+            f'{{"item_id":"{milk_id}","fulfillment_node":"FC-DAL-01",'
+            f'"event_type":"adjustment","path_id":{pid},'
+            f'"seller_id":"{WALMART_SELLER_ID}","delta":-50}}'
+            f"' | python3 -m json.tool"
+            f"  # {path_name}"
+        )
     print(
         f"\n# Re-evaluate: milk should now be OUT OF STOCK"
         f"\ncurl -s -X POST {BASE_URL}/v1/evaluate "
