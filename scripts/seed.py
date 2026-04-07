@@ -9,6 +9,14 @@ from typing import Any
 
 import httpx
 
+# Docker: shared/ is at /seed/shared (volume mount), so /seed must be on path
+# Local: shared/ is at ../services/shared, so ../services must be on path
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(_script_dir, ".."))          # /seed in Docker
+sys.path.insert(0, os.path.join(_script_dir, "..", "services"))  # local dev
+
+from shared.catalog_data import DISPLAY_METADATA
+
 BASE_URL = os.environ.get("SEED_BASE_URL", "http://localhost")
 EFFECTIVE_FROM = "2020-01-01T00:00:00-07:00"
 
@@ -848,7 +856,9 @@ async def seed_items(client: httpx.AsyncClient) -> dict[str, str]:
     print("\n[2/8] Creating items...")
     sku_to_id: dict[str, str] = {}
     for item in ITEMS:
-        r = await client.post("/v1/items", json=item)
+        payload = dict(item)
+        payload["display_metadata"] = DISPLAY_METADATA.get(item["sku"])
+        r = await client.post("/v1/items", json=payload)
         if r.status_code not in (200, 201):
             print(f"  [FATAL] Failed to create item {item['sku']}: "
                   f"HTTP {r.status_code} — {r.text}")

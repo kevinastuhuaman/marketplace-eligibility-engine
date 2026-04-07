@@ -26,9 +26,11 @@ async def evaluate_eligibility(
     response: Response,
     raw_request: Request,
     db: AsyncSession = Depends(get_db),
+    debug: bool = False,
 ):
     try:
         request_data = json.loads(request.model_dump_json())
+        request_data["_debug"] = debug
         result = await evaluate(request_data, db)
 
         # Publish evaluation event to Redis
@@ -144,3 +146,9 @@ async def create_market(
     db.add(mf)
     await db.commit()
     return {"market_code": mf.market_code, "path_id": mf.path_id}
+
+
+@router.get("/v1/demo/scenarios")
+async def list_scenarios():
+    from shared.scenario_data import SCENARIOS
+    return SCENARIOS

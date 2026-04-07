@@ -19,4 +19,5 @@ class Item(Base):
     category_path = Column(LtreeType, nullable=True)
     attributes = Column(JSONB, default=dict)
     compliance_tags = Column(ARRAY(Text), default=list)
+    display_metadata = Column(JSONB, nullable=True)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())

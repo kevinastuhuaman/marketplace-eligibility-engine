@@ -147,6 +147,13 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  frontend:
+    build: ./frontend
+    depends_on:
+      nginx:
+        condition: service_started
+    restart: unless-stopped
+
   caddy:
     image: caddy:2-alpine
     ports:
@@ -157,7 +164,7 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     depends_on:
-      dashboard:
+      frontend:
         condition: service_started
     restart: unless-stopped
 
