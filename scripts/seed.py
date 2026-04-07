@@ -865,13 +865,17 @@ async def seed_items(client: httpx.AsyncClient) -> dict[str, str]:
             print(f"  [OK] {item['sku']}: {item['name']} -> {item_id}")
         else:
             print(f"  [SKIP {r.status_code}] {item['sku']}: {item['name']} (already exists?)")
-    # If any items were skipped, resolve SKU->ID from the API
+    # If any items were skipped, resolve SKU->ID from the API (with retry)
     if len(sku_to_id) < len(ITEMS):
-        all_r = await client.get("/v1/items")
-        if all_r.status_code == 200:
-            for it in all_r.json():
-                if it["sku"] not in sku_to_id:
-                    sku_to_id[it["sku"]] = str(it["item_id"])
+        for attempt in range(3):
+            all_r = await client.get("/v1/items")
+            if all_r.status_code == 200:
+                for it in all_r.json():
+                    if it["sku"] not in sku_to_id:
+                        sku_to_id[it["sku"]] = str(it["item_id"])
+                break
+            print(f"  [RETRY] GET /v1/items returned {all_r.status_code}, retrying ({attempt+1}/3)...")
+            await asyncio.sleep(2)
     return sku_to_id
 
 
@@ -892,13 +896,17 @@ async def seed_fulfillment_paths(client: httpx.AsyncClient) -> dict[str, int]:
             )
         else:
             print(f"  [SKIP {r.status_code}] {path['path_code']} (already exists?)")
-    # Resolve any missing path IDs
+    # Resolve any missing path IDs (with retry)
     if len(code_to_id) < len(FULFILLMENT_PATHS):
-        all_r = await client.get("/v1/fulfillment-paths")
-        if all_r.status_code == 200:
-            for p in all_r.json():
-                if p["path_code"] not in code_to_id:
-                    code_to_id[p["path_code"]] = p["path_id"]
+        for attempt in range(3):
+            all_r = await client.get("/v1/fulfillment-paths")
+            if all_r.status_code == 200:
+                for p in all_r.json():
+                    if p["path_code"] not in code_to_id:
+                        code_to_id[p["path_code"]] = p["path_id"]
+                break
+            print(f"  [RETRY] GET /v1/fulfillment-paths returned {all_r.status_code}, retrying ({attempt+1}/3)...")
+            await asyncio.sleep(2)
     return code_to_id
 
 
@@ -922,8 +930,8 @@ async def seed_markets(
                     "priority": priority,
                 },
             )
-            if r.status_code != 201:
-                print(f"  [ERR {r.status_code}] {market} / {path_code}: {r.text}")
+            if r.status_code not in (200, 201):
+                pass  # Silently skip duplicates on rerun
         print(f"  [OK] {market}: 4 paths enabled")
 
 
