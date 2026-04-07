@@ -8,8 +8,66 @@ from app.db import get_db
 from app.models.sellers import Seller
 from app.models.offers import SellerOffer
 from app.schemas.sellers import SellerCreate, OfferCreate, MetricsUpdate
+from shared.constants import WALMART_SELLER_ID
 
 router = APIRouter()
+
+
+@router.get("/v1/sellers")
+async def list_sellers(db: AsyncSession = Depends(get_db)):
+    """List all 3P sellers (excludes Walmart 1P)."""
+    result = await db.execute(
+        select(Seller)
+        .where(Seller.seller_id != WALMART_SELLER_ID)
+        .order_by(Seller.name)
+    )
+    sellers = result.scalars().all()
+    return [
+        {
+            "seller_id": s.seller_id,
+            "name": s.name,
+            "trust_tier": s.trust_tier,
+            "defect_rate": float(s.defect_rate),
+            "return_rate": float(s.return_rate),
+            "on_time_rate": float(s.on_time_rate),
+            "total_orders": s.total_orders,
+        }
+        for s in sellers
+    ]
+
+
+@router.get("/v1/sellers/for-item/{item_id}")
+async def sellers_for_item(item_id: UUID, db: AsyncSession = Depends(get_db)):
+    """Return only 3P sellers with active offers for this specific item."""
+    offers_result = await db.execute(
+        select(SellerOffer).where(
+            and_(
+                SellerOffer.item_id == item_id,
+                SellerOffer.active.is_(True),
+                SellerOffer.seller_id != WALMART_SELLER_ID,
+            )
+        )
+    )
+    offers = offers_result.scalars().all()
+    if not offers:
+        return []
+
+    seller_ids = list({o.seller_id for o in offers})
+    sellers_result = await db.execute(
+        select(Seller).where(Seller.seller_id.in_(seller_ids))
+    )
+    sellers = {s.seller_id: s for s in sellers_result.scalars().all()}
+
+    return [
+        {
+            "seller_id": sid,
+            "name": sellers[sid].name,
+            "trust_tier": sellers[sid].trust_tier,
+            "defect_rate": float(sellers[sid].defect_rate),
+        }
+        for sid in seller_ids
+        if sid in sellers
+    ]
 
 
 @router.get("/v1/sellers/{seller_id}")

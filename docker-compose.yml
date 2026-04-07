@@ -149,5 +149,13 @@ services:
       redis:
         condition: service_healthy
 
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      nginx:
+        condition: service_started
+
 volumes:
   postgres_data:

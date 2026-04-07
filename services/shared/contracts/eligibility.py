@@ -100,6 +100,8 @@ class EligibilityResponse(BaseModel):
     conflict_resolutions: list[ConflictResolution] = Field(default_factory=list)
     rules_evaluated: int = 0
     rules_suppressed: int = 0
+    rules_loaded: int = 0
+    debug: dict | None = None
     evaluation_ms: int = 0
     evaluated_at: datetime
 

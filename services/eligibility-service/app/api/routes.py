@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Query, Request, Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db import get_db
@@ -26,9 +26,11 @@ async def evaluate_eligibility(
     response: Response,
     raw_request: Request,
     db: AsyncSession = Depends(get_db),
+    debug: bool = Query(False),
 ):
     try:
         request_data = json.loads(request.model_dump_json())
+        request_data["_debug"] = debug
         result = await evaluate(request_data, db)
 
         # Publish evaluation event to Redis
@@ -114,6 +116,16 @@ async def list_rules(db: AsyncSession = Depends(get_db)):
     ]
 
 
+@router.get("/v1/fulfillment-paths")
+async def list_paths(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(FulfillmentPath).order_by(FulfillmentPath.path_id))
+    paths = result.scalars().all()
+    return [
+        {"path_id": p.path_id, "path_code": p.path_code, "owner": p.owner}
+        for p in paths
+    ]
+
+
 @router.post("/v1/fulfillment-paths", status_code=201)
 async def create_path(
     payload: FulfillmentPathCreate, db: AsyncSession = Depends(get_db)
@@ -144,3 +156,9 @@ async def create_market(
     db.add(mf)
     await db.commit()
     return {"market_code": mf.market_code, "path_id": mf.path_id}
+
+
+@router.get("/v1/demo/scenarios")
+async def list_scenarios():
+    from shared.scenario_data import SCENARIOS
+    return SCENARIOS

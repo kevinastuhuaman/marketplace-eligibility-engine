@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme {
+  --color-walmart-blue: #0071CE;
+  --color-walmart-blue-dark: #004F9A;
+  --color-walmart-blue-light: #E6F2FA;
+  --color-walmart-yellow: #FFC220;
+  --color-walmart-yellow-dark: #F5A623;
+  --color-walmart-green: #2E7D32;
+  --color-walmart-red: #D32F2F;
+  --color-walmart-orange: #F57C00;
+  --color-walmart-gray-50: #F8F8F8;
+  --color-walmart-gray-100: #F1F1F2;
+  --color-walmart-gray-200: #E0E0E0;
+  --color-walmart-gray-300: #BDBDBD;
+  --color-walmart-gray-500: #76787B;
+  --color-walmart-gray-700: #46474A;
+  --color-walmart-gray-900: #2E2F32;
+  --color-debug-bg: #0f172a;
+  --color-debug-surface: #1e293b;
+  --color-debug-border: #334155;
+}
+
+body {
+  margin: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: #fff;
+}

@@ -9,6 +9,14 @@ from typing import Any
 
 import httpx
 
+# Docker: shared/ is at /seed/shared (volume mount), so /seed must be on path
+# Local: shared/ is at ../services/shared, so ../services must be on path
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(_script_dir, ".."))          # /seed in Docker
+sys.path.insert(0, os.path.join(_script_dir, "..", "services"))  # local dev
+
+from shared.catalog_data import DISPLAY_METADATA
+
 BASE_URL = os.environ.get("SEED_BASE_URL", "http://localhost")
 EFFECTIVE_FROM = "2020-01-01T00:00:00-07:00"
 
@@ -833,13 +841,12 @@ async def seed_sellers(client: httpx.AsyncClient) -> dict[str, dict]:
     results: dict[str, dict] = {}
     for seller in SELLERS:
         r = await client.post("/v1/sellers", json=seller)
-        if r.status_code not in (200, 201):
-            print(f"  [FATAL] Failed to create seller {seller['name']}: "
-                  f"HTTP {r.status_code} — {r.text}")
-            sys.exit(1)
-        data = r.json()
-        results[seller["seller_id"]] = data
-        print(f"  [OK] {seller['name']} (id={seller['seller_id']})")
+        if r.status_code == 201:
+            results[seller["seller_id"]] = r.json()
+            print(f"  [OK] {seller['name']} (id={seller['seller_id']})")
+        else:
+            results[seller["seller_id"]] = {"seller_id": seller["seller_id"]}
+            print(f"  [SKIP {r.status_code}] {seller['name']} (already exists?)")
     return results
 
 
@@ -848,15 +855,23 @@ async def seed_items(client: httpx.AsyncClient) -> dict[str, str]:
     print("\n[2/8] Creating items...")
     sku_to_id: dict[str, str] = {}
     for item in ITEMS:
-        r = await client.post("/v1/items", json=item)
-        if r.status_code not in (200, 201):
-            print(f"  [FATAL] Failed to create item {item['sku']}: "
-                  f"HTTP {r.status_code} — {r.text}")
-            sys.exit(1)
-        data = r.json()
-        item_id = data.get("item_id", "?")
-        sku_to_id[item["sku"]] = str(item_id)
-        print(f"  [OK] {item['sku']}: {item['name']} -> {item_id}")
+        payload = dict(item)
+        payload["display_metadata"] = DISPLAY_METADATA.get(item["sku"])
+        r = await client.post("/v1/items", json=payload)
+        if r.status_code == 201:
+            data = r.json()
+            item_id = data.get("item_id", "?")
+            sku_to_id[item["sku"]] = str(item_id)
+            print(f"  [OK] {item['sku']}: {item['name']} -> {item_id}")
+        else:
+            print(f"  [SKIP {r.status_code}] {item['sku']}: {item['name']} (already exists?)")
+    # If any items were skipped, resolve SKU->ID from the API
+    if len(sku_to_id) < len(ITEMS):
+        all_r = await client.get("/v1/items")
+        if all_r.status_code == 200:
+            for it in all_r.json():
+                if it["sku"] not in sku_to_id:
+                    sku_to_id[it["sku"]] = str(it["item_id"])
     return sku_to_id
 
 
@@ -866,18 +881,24 @@ async def seed_fulfillment_paths(client: httpx.AsyncClient) -> dict[str, int]:
     code_to_id: dict[str, int] = {}
     for path in FULFILLMENT_PATHS:
         r = await client.post("/v1/fulfillment-paths", json=path)
-        if r.status_code not in (200, 201):
-            print(f"  [FATAL] Failed to create path {path['path_code']}: "
-                  f"HTTP {r.status_code} — {r.text}")
-            sys.exit(1)
-        data = r.json()
-        path_id = data.get("path_id", "?")
-        code_to_id[path["path_code"]] = path_id
-        weight = path.get("max_weight_lbs") or "unlimited"
-        print(
-            f"  [OK] {path['path_code']} ({path['owner']}, "
-            f"max_weight={weight}) -> path_id={path_id}"
-        )
+        if r.status_code == 201:
+            data = r.json()
+            path_id = data.get("path_id", "?")
+            code_to_id[path["path_code"]] = path_id
+            weight = path.get("max_weight_lbs") or "unlimited"
+            print(
+                f"  [OK] {path['path_code']} ({path['owner']}, "
+                f"max_weight={weight}) -> path_id={path_id}"
+            )
+        else:
+            print(f"  [SKIP {r.status_code}] {path['path_code']} (already exists?)")
+    # Resolve any missing path IDs
+    if len(code_to_id) < len(FULFILLMENT_PATHS):
+        all_r = await client.get("/v1/fulfillment-paths")
+        if all_r.status_code == 200:
+            for p in all_r.json():
+                if p["path_code"] not in code_to_id:
+                    code_to_id[p["path_code"]] = p["path_id"]
     return code_to_id
 
 

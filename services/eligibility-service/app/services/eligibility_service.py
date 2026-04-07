@@ -127,6 +127,8 @@ async def evaluate(request_data: dict, db: AsyncSession) -> dict:
     inv_by_path = {p["path_id"]: p for p in inventory_data.get("paths", [])}
 
     # --- Step 6: Evaluate rules for each path ---
+    debug_mode = request_data.get("_debug", False)
+    per_path_evals = []
     path_results = []
     all_triggered = []
 
@@ -136,6 +138,27 @@ async def evaluate(request_data: dict, db: AsyncSession) -> dict:
         )
         triggered = evaluate_rules(rules, variables)
         all_triggered.extend(triggered)
+
+        if debug_mode:
+            triggered_ids = {t.rule_id for t in triggered}
+            per_path_evals.append({
+                "path_code": fp.path_code,
+                "_triggered_ids": triggered_ids,
+                "_rules_snapshot": [
+                    {
+                        "rule_id": r.rule_id,
+                        "rule_name": r.rule_name,
+                        "rule_type": r.rule_type,
+                        "action": r.action,
+                        "priority": r.priority,
+                        "conflict_group": r.conflict_group,
+                        "blocked_paths": r.blocked_paths or [],
+                        "reason": r.reason,
+                        "rule_definition": r.rule_definition,
+                    }
+                    for r in rules
+                ],
+            })
 
     # --- Step 7: Resolve conflicts and accumulate ---
     # Deduplicate triggered rules (same rule may trigger for multiple paths)
@@ -147,6 +170,27 @@ async def evaluate(request_data: dict, db: AsyncSession) -> dict:
             unique_triggered.append(t)
 
     result = resolve_and_accumulate(unique_triggered)
+
+    # Enrich debug per-path evaluations with suppression state
+    if debug_mode:
+        suppression_map = {}
+        for cr in result.conflict_resolutions:
+            suppression_map[cr["suppressed_rule_id"]] = {
+                "rule_id": cr["winner_rule_id"],
+                "rule_name": cr["winner_rule_name"],
+            }
+        for ppe in per_path_evals:
+            triggered_ids = ppe.pop("_triggered_ids")
+            ppe["rules"] = []
+            for rs in ppe.pop("_rules_snapshot"):
+                rid = rs["rule_id"]
+                matched = rid in triggered_ids
+                suppressed = matched and rid in suppression_map
+                rs["matched"] = matched
+                rs["suppressed"] = suppressed
+                rs["suppressed_by"] = suppression_map.get(rid) if suppressed else None
+                rs["survived"] = matched and not suppressed
+                ppe["rules"].append(rs)
 
     # --- Step 8: Resolve REQUIRE rules against context ---
     context_vars = request_data.get("context") or {}
@@ -210,18 +254,27 @@ async def evaluate(request_data: dict, db: AsyncSession) -> dict:
         "conflict_resolutions": result.conflict_resolutions,
         "rules_evaluated": result.rules_evaluated,
         "rules_suppressed": result.rules_suppressed,
+        "rules_loaded": len(rules),
+        "debug": {
+            "rules_loaded": len(rules),
+            "rules_triggered": len(unique_triggered),
+            "rules_suppressed": result.rules_suppressed,
+            "per_path_evaluations": per_path_evals,
+        } if debug_mode else None,
         "evaluation_ms": elapsed_ms,
         "evaluated_at": now.isoformat(),
     }
 
     # --- Step 10: Log audit ---
+    audit_response = {k: v for k, v in response.items() if k != "debug"}
+    audit_request = {k: v for k, v in request_data.items() if not k.startswith("_")}
     audit = EligibilityAuditLog(
         item_id=item_id,
         market_code=market_code,
         seller_id=seller_id,
         eligible=overall_eligible,
-        request_payload=request_data,
-        response_payload=response,
+        request_payload=audit_request,
+        response_payload=audit_response,
         rules_evaluated=result.rules_evaluated,
         rules_suppressed=result.rules_suppressed,
         evaluation_ms=elapsed_ms,
@@ -301,6 +354,8 @@ def _error_response(item_id, market_code, timestamp, start, errors):
         "conflict_resolutions": [],
         "rules_evaluated": 0,
         "rules_suppressed": 0,
+        "rules_loaded": 0,
+        "debug": None,
         "evaluation_ms": elapsed_ms,
         "evaluated_at": datetime.now(PACIFIC).isoformat(),
     }

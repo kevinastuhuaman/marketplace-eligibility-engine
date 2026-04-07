@@ -8,3 +8,4 @@ class ItemCreate(BaseModel):
     category_path: str | None = None
     attributes: dict | None = None
     compliance_tags: list[str] | None = None
+    display_metadata: dict | None = None
