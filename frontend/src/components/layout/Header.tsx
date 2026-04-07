@@ -27,6 +27,10 @@ export function Header() {
           <div className="flex items-center gap-2 ml-4">
             <span className="text-xs text-blue-200">Customer</span>
             <button
+              type="button"
+              role="switch"
+              aria-checked={testerMode}
+              aria-label="Toggle tester mode"
               onClick={toggleTesterMode}
               className="relative w-11 h-6 rounded-full transition-colors cursor-pointer"
               style={{ backgroundColor: testerMode ? "#FFC220" : "rgba(255,255,255,0.3)" }}

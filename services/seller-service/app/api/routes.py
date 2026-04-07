@@ -43,7 +43,7 @@ async def sellers_for_item(item_id: UUID, db: AsyncSession = Depends(get_db)):
         select(SellerOffer).where(
             and_(
                 SellerOffer.item_id == item_id,
-                SellerOffer.active == True,
+                SellerOffer.active.is_(True),
                 SellerOffer.seller_id != WALMART_SELLER_ID,
             )
         )
@@ -52,7 +52,7 @@ async def sellers_for_item(item_id: UUID, db: AsyncSession = Depends(get_db)):
     if not offers:
         return []
 
-    seller_ids = [o.seller_id for o in offers]
+    seller_ids = list({o.seller_id for o in offers})
     sellers_result = await db.execute(
         select(Seller).where(Seller.seller_id.in_(seller_ids))
     )
@@ -60,13 +60,13 @@ async def sellers_for_item(item_id: UUID, db: AsyncSession = Depends(get_db)):
 
     return [
         {
-            "seller_id": o.seller_id,
-            "name": sellers[o.seller_id].name,
-            "trust_tier": sellers[o.seller_id].trust_tier,
-            "defect_rate": float(sellers[o.seller_id].defect_rate),
+            "seller_id": sid,
+            "name": sellers[sid].name,
+            "trust_tier": sellers[sid].trust_tier,
+            "defect_rate": float(sellers[sid].defect_rate),
         }
-        for o in offers
-        if o.seller_id in sellers
+        for sid in seller_ids
+        if sid in sellers
     ]
 
 
