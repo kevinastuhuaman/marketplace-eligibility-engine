@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends libpq-dev curl 
 
 COPY services/eligibility-service/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir pytest>=8.0 pytest-asyncio>=0.23
+RUN pip install --no-cache-dir 'pytest>=8.0' 'pytest-asyncio>=0.23'
 
 COPY services/shared/ /app/shared/
 COPY tests/ /app/tests/

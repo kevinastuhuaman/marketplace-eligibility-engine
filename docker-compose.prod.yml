@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_DB: transactability
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./db-init/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -17,7 +17,9 @@ services:
 
   redis:
     image: redis:7-alpine
-    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy noeviction
+    volumes:
+      - redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -30,7 +32,7 @@ services:
       context: ./services
       dockerfile: item-service/Dockerfile
     environment:
-      DATABASE_URL: "postgresql+asyncpg://postgres:${POSTGRES_PASSWORD}@postgres:5432/transactability"
+      DATABASE_URL: "postgresql+asyncpg://postgres:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}@postgres:5432/transactability"
     depends_on:
       postgres:
         condition: service_healthy
@@ -47,7 +49,7 @@ services:
       context: ./services
       dockerfile: eligibility-service/Dockerfile
     environment:
-      DATABASE_URL: "postgresql+asyncpg://postgres:${POSTGRES_PASSWORD}@postgres:5432/transactability"
+      DATABASE_URL: "postgresql+asyncpg://postgres:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}@postgres:5432/transactability"
       REDIS_URL: "redis://redis:6379"
       ITEM_SERVICE_URL: "http://item-service:8000"
       INVENTORY_SERVICE_URL: "http://inventory-service:8000"
@@ -76,7 +78,7 @@ services:
       context: ./services
       dockerfile: inventory-service/Dockerfile
     environment:
-      DATABASE_URL: "postgresql+asyncpg://postgres:${POSTGRES_PASSWORD}@postgres:5432/transactability"
+      DATABASE_URL: "postgresql+asyncpg://postgres:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}@postgres:5432/transactability"
       REDIS_URL: "redis://redis:6379"
     depends_on:
       postgres:
@@ -96,7 +98,7 @@ services:
       context: ./services
       dockerfile: seller-service/Dockerfile
     environment:
-      DATABASE_URL: "postgresql+asyncpg://postgres:${POSTGRES_PASSWORD}@postgres:5432/transactability"
+      DATABASE_URL: "postgresql+asyncpg://postgres:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}@postgres:5432/transactability"
       REDIS_URL: "redis://redis:6379"
     depends_on:
       postgres:
@@ -125,6 +127,11 @@ services:
         condition: service_healthy
       seller-service:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost/health >/dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     restart: unless-stopped
 
   dashboard:
@@ -134,7 +141,7 @@ services:
       REDIS_URL: "redis://redis:6379"
     depends_on:
       nginx:
-        condition: service_started
+        condition: service_healthy
       redis:
         condition: service_healthy
     restart: unless-stopped
@@ -168,7 +175,7 @@ services:
       eligibility-service:
         condition: service_healthy
       nginx:
-        condition: service_started
+        condition: service_healthy
     profiles: ["seed"]
     restart: "no"
 
@@ -187,12 +194,14 @@ services:
       eligibility-service:
         condition: service_healthy
       nginx:
-        condition: service_started
+        condition: service_healthy
     profiles: ["test"]
     restart: "no"
 
 volumes:
   postgres_data:
     name: transactability_pg_data
+  redis_data:
+    name: transactability_redis_data
   caddy_data:
   caddy_config:
