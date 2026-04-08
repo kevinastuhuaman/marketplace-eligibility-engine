@@ -20,6 +20,9 @@ const mockSellers = [
 
 test.describe("Product detail responsive layout", () => {
   test("stacks cleanly on a mobile viewport", async ({ page }) => {
+    await page.route("**/api/v1/demo/scenarios", (route) =>
+      route.fulfill({ json: [] }),
+    );
     await page.route("**/api/v1/items/test-item", (route) =>
       route.fulfill({ json: mockItem }),
     );
