@@ -52,12 +52,12 @@ export function ProductDetail({ item }: { item: Item }) {
   }
 
   return (
-    <div className="flex gap-8">
-      <div className="flex-shrink-0 w-64 h-64 bg-walmart-gray-50 rounded-xl flex items-center justify-center text-8xl">
+    <div className="flex flex-col gap-6 md:flex-row md:gap-8">
+      <div className="flex aspect-square w-full max-w-xs flex-shrink-0 self-center items-center justify-center rounded-xl bg-walmart-gray-50 text-7xl sm:max-w-sm md:h-64 md:w-64 md:max-w-none md:self-start md:text-8xl">
         {item.display_metadata.emoji || "📦"}
       </div>
 
-      <div className="flex-1 space-y-4">
+      <div className="min-w-0 flex-1 space-y-4">
         <div>
           <p className="text-xs text-walmart-gray-500 font-mono">{item.sku}</p>
           <h1 className="text-2xl font-bold text-walmart-gray-900">{item.name}</h1>
