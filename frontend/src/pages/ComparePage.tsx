@@ -26,7 +26,7 @@ export function ComparePage() {
     }
     let cancelled = false;
     async function run() {
-      const entries = await Promise.all(
+      const entries = await Promise.allSettled(
         compareMarketCodes.map(async (marketCode) => {
           const market = markets.find((entry) => entry.code === marketCode);
           if (!market) {
@@ -43,9 +43,11 @@ export function ComparePage() {
         }),
       );
       if (!cancelled) {
-        setResults(
-          Object.fromEntries(entries.filter((entry): entry is readonly [string, EligibilityResponse] => !!entry)),
-        );
+        const fulfilled = entries
+          .filter((e): e is PromiseFulfilledResult<readonly [string, EligibilityResponse] | null> => e.status === "fulfilled")
+          .map((e) => e.value)
+          .filter((entry): entry is readonly [string, EligibilityResponse] => !!entry);
+        setResults(Object.fromEntries(fulfilled));
       }
     }
     void run();

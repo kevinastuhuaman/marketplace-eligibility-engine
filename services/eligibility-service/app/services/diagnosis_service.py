@@ -130,7 +130,8 @@ async def build_diagnosis(
             }
         )
 
-    overall_status = "clear"
+    errors = evaluation.get("errors", [])
+    overall_status = "error" if errors else "clear"
     if any(path["status"] == "blocked" for path in evaluation.get("paths", [])):
         overall_status = "blocked"
     elif any(path["status"] == "gated" for path in evaluation.get("paths", [])):

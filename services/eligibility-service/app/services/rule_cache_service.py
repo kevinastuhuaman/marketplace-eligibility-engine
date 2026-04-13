@@ -34,7 +34,10 @@ async def get_cached_rules(market_code: str) -> list[dict] | None:
     client = await _get_redis()
     if client is None:
         return None
-    payload = await client.get(_cache_key(market_code))
+    try:
+        payload = await client.get(_cache_key(market_code))
+    except Exception:
+        return None
     if not payload:
         return None
     try:
@@ -51,4 +54,7 @@ async def set_cached_rules(market_code: str, rules: list[dict]) -> None:
     client = await _get_redis()
     if client is None:
         return
-    await client.set(_cache_key(market_code), json.dumps(rules, default=str), ex=ttl)
+    try:
+        await client.set(_cache_key(market_code), json.dumps(rules, default=str), ex=ttl)
+    except Exception:
+        pass

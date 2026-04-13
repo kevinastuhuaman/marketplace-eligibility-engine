@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import time
-from datetime import datetime
+from datetime import datetime, timezone
 from types import SimpleNamespace
 from uuid import UUID
 from zoneinfo import ZoneInfo
@@ -530,9 +530,11 @@ async def _load_matching_rules(
             continue
         effective_from = getattr(rule, "effective_from", None)
         effective_until = getattr(rule, "effective_until", None)
-        if effective_from and effective_from > timestamp:
+        # Normalize naive timestamp to UTC to avoid TypeError with TIMESTAMPTZ columns
+        ts = timestamp if timestamp.tzinfo else timestamp.replace(tzinfo=timezone.utc)
+        if effective_from and effective_from > ts:
             continue
-        if effective_until and effective_until <= timestamp:
+        if effective_until and effective_until <= ts:
             continue
         filtered_rules.append(rule)
     return filtered_rules

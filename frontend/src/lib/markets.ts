@@ -149,7 +149,7 @@ export function resolveMarketOption(
   availableMarkets: MarketOption[] = FALLBACK_MARKETS,
 ): MarketOption {
   if (!marketCode) {
-    return availableMarkets[1] ?? availableMarkets[0];
+    return availableMarkets.find((m) => m.code === "US-TX") ?? availableMarkets[0];
   }
 
   return (
