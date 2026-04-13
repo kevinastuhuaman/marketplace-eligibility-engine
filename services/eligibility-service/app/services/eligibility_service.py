@@ -155,9 +155,13 @@ async def evaluate(request_data: dict, db: AsyncSession) -> dict:
             performance_data = await seller_client.get_performance(seller_id)
         except Exception:
             performance_data = None
+        # Normalize performance metric codes to seller_data field names
+        _PERF_CODE_TO_FIELD = {
+            "on_time_delivery_rate": "on_time_rate",
+        }
         if performance_data:
             metric_map = {
-                metric["code"]: metric.get("actual")
+                _PERF_CODE_TO_FIELD.get(metric["code"], metric["code"]): metric.get("actual")
                 for metric in performance_data.get("metrics", [])
             }
             seller_data = {**seller_data, **metric_map}

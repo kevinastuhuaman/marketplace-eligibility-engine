@@ -254,7 +254,7 @@ async def update_metrics(
         cancellation_rate=float(seller.cancellation_rate),
     )
     seller.ipi_score = payload.ipi_score if payload.ipi_score is not None else score
-    seller.ipi_breakdown = payload.ipi_breakdown or breakdown
+    seller.ipi_breakdown = payload.ipi_breakdown if payload.ipi_breakdown is not None else breakdown
     seller.ipi_updated_at = datetime.now(PACIFIC)
     seller.performance_updated_at = datetime.now(PACIFIC)
     await db.commit()
