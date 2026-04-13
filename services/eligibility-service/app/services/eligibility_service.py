@@ -119,10 +119,10 @@ async def evaluate(request_data: dict, db: AsyncSession) -> dict:
 
         try:
             seller_data = await seller_client.get_seller(seller_id)
-        except Exception as exc:
-            return _fallback_response(item_id, market_code, risk_tier, start, f"Seller service unavailable: {exc}")
-        if not seller_data:
-            return _error_response(item_id, market_code, start, ["Seller not found"])
+        except Exception:
+            seller_data = None  # Continue evaluation without seller enrichment
+        if seller_data is None:
+            seller_data = {"seller_id": str(seller_id), "trust_tier": "new"}  # Minimal fallback
 
         try:
             ipi_data = await seller_client.get_ipi(seller_id)

@@ -67,7 +67,11 @@ async def get_availability(
     paths = []
     for path_id in path_id_list:
         positions_for_path = path_groups.get(path_id, [])
-        scoped_positions = [position for position in positions_for_path if position.node_enabled]
+        scoped_positions = [
+            position for position in positions_for_path
+            if position.node_enabled
+            and nodes_by_id.get(position.fulfillment_node, FulfillmentNode(enabled=True)).enabled
+        ]
         primary_positions = (
             [position for position in scoped_positions if position.fulfillment_node == primary_node]
             if primary_node
