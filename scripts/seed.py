@@ -1086,7 +1086,7 @@ COMPLIANCE_RULES: list[dict[str, Any]] = [
                 {"name": "seller_ipi_score", "operator": "less_than", "value": 300},
             ]
         },
-        "Seller IPI must be at least 300 for regulated transactability workflows",
+        "Seller IPI must be at least 300 for regulated eligibility workflows",
         rule_type="seller",
         blocked_paths=ALL_PATHS,
         gate={
@@ -1107,7 +1107,7 @@ COMPLIANCE_RULES: list[dict[str, Any]] = [
                 {"name": "fulfillment_path", "operator": "equal_to", "value": "marketplace_3p"},
             ]
         },
-        "Sellers below 200 IPI are blocked from marketplace transactability",
+        "Sellers below 200 IPI are blocked from marketplace eligibility",
         rule_type="seller",
         blocked_paths=["marketplace_3p"],
         metadata={"policy": "IPI marketplace block", "source_service": "seller-service"},

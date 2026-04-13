@@ -412,7 +412,7 @@ SCENARIOS: list[dict] = [
         "id": 13,
         "label": "School-Zone Alcohol Delivery",
         "short_label": "School Zone",
-        "what_it_proves": "Same ZIP, different coordinates, different transactability outcome",
+        "what_it_proves": "Same ZIP, different coordinates, different eligibility outcome",
         "narration": "The school-zone overlay blocks one address while nearby households in the same ZIP remain eligible.",
         "variants": [
             {
