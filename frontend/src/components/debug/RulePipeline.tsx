@@ -30,7 +30,7 @@ export function RulePipeline({ debug }: { debug: DebugInfo }) {
             className={clsx(
               "px-3 py-1 rounded text-xs font-medium transition-colors",
               i === activeTab
-                ? "bg-walmart-blue text-white"
+                ? "bg-brand-blue text-white"
                 : "bg-debug-surface text-gray-400 hover:text-white"
             )}
           >

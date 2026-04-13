@@ -1,28 +1,34 @@
 import { Link } from "react-router-dom";
 import { LocationSelector } from "../customer/LocationSelector";
 import { useEvaluationStore } from "../../store/evaluation-store";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function Header() {
   const { testerMode, toggleTesterMode } = useEvaluationStore();
 
   return (
-    <header className="bg-walmart-blue text-white">
+    <header className="bg-brand-blue text-white">
       <div className="max-w-screen-2xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2">
-          <svg viewBox="0 0 48 48" className="w-7 h-7" fill="#FFC220">
-            <circle cx="24" cy="24" r="3" />
-            <rect x="23" y="4" width="2" height="10" rx="1" />
-            <rect x="23" y="4" width="2" height="10" rx="1" transform="rotate(60 24 24)" />
-            <rect x="23" y="4" width="2" height="10" rx="1" transform="rotate(120 24 24)" />
-            <rect x="23" y="4" width="2" height="10" rx="1" transform="rotate(180 24 24)" />
-            <rect x="23" y="4" width="2" height="10" rx="1" transform="rotate(240 24 24)" />
-            <rect x="23" y="4" width="2" height="10" rx="1" transform="rotate(300 24 24)" />
+          <svg viewBox="0 0 24 24" className="w-7 h-7" fill="none" stroke="#FFC220" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            <path d="M9 12l2 2 4-4" stroke="#FFC220" strokeWidth="2" />
           </svg>
-          <span className="text-lg font-bold tracking-tight">Walmart</span>
+          <span className="text-lg font-bold tracking-tight">Marketplace</span>
         </Link>
 
         <div className="flex items-center gap-4">
+          <Link to="/scenarios/walkthrough" className="text-xs font-semibold text-blue-100">
+            Walkthrough
+          </Link>
+
+          <a href="/industry-landscape.html" className="text-xs font-semibold text-blue-100">
+            Industry Landscape
+          </a>
+
           <LocationSelector />
+
+          <ThemeToggle />
 
           <div className="flex items-center gap-2 ml-4">
             <span className="text-xs text-blue-200">Customer</span>

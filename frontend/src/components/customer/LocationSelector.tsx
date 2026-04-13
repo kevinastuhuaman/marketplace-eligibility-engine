@@ -1,8 +1,21 @@
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchMarkets } from "../../api/markets";
 import { useMarketStore } from "../../store/market-store";
-import { MARKETS } from "../../data/markets";
+import { mergeMarketDefinitions } from "../../lib/markets";
 
 export function LocationSelector() {
-  const { market, setMarket } = useMarketStore();
+  const { market, markets, setMarketByCode, setMarkets } = useMarketStore();
+  const { data } = useQuery({
+    queryKey: ["markets"],
+    queryFn: fetchMarkets,
+  });
+
+  useEffect(() => {
+    if (data) {
+      setMarkets(mergeMarketDefinitions(data));
+    }
+  }, [data, setMarkets]);
 
   return (
     <div className="flex items-center gap-2 bg-white/10 rounded-full px-3 py-1">
@@ -12,15 +25,12 @@ export function LocationSelector() {
       </svg>
       <select
         value={market.code}
-        onChange={(e) => {
-          const m = MARKETS.find((m) => m.code === e.target.value);
-          if (m) setMarket(m);
-        }}
+        onChange={(e) => setMarketByCode(e.target.value)}
         className="bg-transparent text-white text-sm border-none outline-none cursor-pointer appearance-none pr-4"
       >
-        {MARKETS.map((m) => (
+        {markets.map((m) => (
           <option key={m.code} value={m.code} className="text-black">
-            {m.city}, {m.state}
+            {m.city}, {m.region_code} · {m.country_label}
           </option>
         ))}
       </select>

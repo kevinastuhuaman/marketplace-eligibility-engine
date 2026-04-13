@@ -59,6 +59,11 @@ services:
       ITEM_SERVICE_URL: "http://item-service:8000"
       INVENTORY_SERVICE_URL: "http://inventory-service:8000"
       SELLER_SERVICE_URL: "http://seller-service:8000"
+      ENABLE_DIAGNOSIS: "true"
+      ENABLE_GEO_RESTRICTIONS: "true"
+      ENABLE_LOW_CONFIDENCE: "true"
+      ENABLE_CIRCUIT_BREAKERS: "true"
+      ENABLE_BATCH_EVALUATION: "true"
     depends_on:
       postgres:
         condition: service_healthy

@@ -1,4 +1,4 @@
-"""Seed script for the Walmart Transactability Engine — all 10 demo scenarios.
+"""Seed script for the Marketplace Eligibility Engine.
 Run with: python -m scripts.seed
 Requires all services to be running (docker compose up).
 """
@@ -23,7 +23,7 @@ EFFECTIVE_FROM = "2020-01-01T00:00:00-07:00"
 # ---------------------------------------------------------------------------
 # Seller UUIDs (deterministic for reproducibility)
 # ---------------------------------------------------------------------------
-WALMART_SELLER_ID = "00000000-0000-0000-0000-000000000001"
+PLATFORM_SELLER_ID = "00000000-0000-0000-0000-000000000001"
 ACME_WINES_SELLER_ID = "00000000-0000-0000-0000-000000000002"
 TECHGEAR_SELLER_ID = "00000000-0000-0000-0000-000000000003"
 NEWSELLER_SELLER_ID = "00000000-0000-0000-0000-000000000004"
@@ -156,7 +156,133 @@ ITEMS: list[dict[str, Any]] = [
         "compliance_tags": ["alcohol", "age_restricted"],
         "attributes": {"weight_lbs": 12.8, "abv": 5},
     },
+    {
+        "sku": "HOME-002",
+        "name": "Licuamax NOM Blender",
+        "item_type": "base",
+        "category_path": "home.kitchen.appliances",
+        "compliance_tags": ["nom_sensitive"],
+        "attributes": {
+            "weight_lbs": 8.4,
+            "requires_nom": True,
+            "has_nom_certificate": True,
+            "has_spanish_label": True,
+        },
+    },
+    {
+        "sku": "HOME-005",
+        "name": "Licuamax Blender Import Pending",
+        "item_type": "base",
+        "category_path": "home.kitchen.appliances",
+        "compliance_tags": ["nom_sensitive"],
+        "attributes": {
+            "weight_lbs": 8.4,
+            "requires_nom": True,
+            "has_nom_certificate": False,
+            "has_spanish_label": True,
+        },
+    },
+    {
+        "sku": "ALC-004",
+        "name": "Mango Hard Soda Mexico Label",
+        "item_type": "base",
+        "category_path": "alcohol.ready_to_drink",
+        "compliance_tags": ["alcohol", "age_restricted", "sugary_drink"],
+        "attributes": {
+            "weight_lbs": 2.2,
+            "abv": 6,
+            "has_spanish_label": True,
+        },
+    },
+    {
+        "sku": "ALC-005",
+        "name": "Mango Hard Soda English Label",
+        "item_type": "base",
+        "category_path": "alcohol.ready_to_drink",
+        "compliance_tags": ["alcohol", "age_restricted", "sugary_drink"],
+        "attributes": {
+            "weight_lbs": 2.2,
+            "abv": 6,
+            "has_spanish_label": False,
+        },
+    },
+    {
+        "sku": "GROC-002",
+        "name": "Cereal Alto Azucar",
+        "item_type": "base",
+        "category_path": "grocery.cereal",
+        "compliance_tags": ["sugary_food"],
+        "attributes": {
+            "weight_lbs": 1.1,
+            "has_black_label": True,
+        },
+    },
+    {
+        "sku": "ELEC-003",
+        "name": "AeroDrone Lithium Battery Pack",
+        "item_type": "base",
+        "category_path": "electronics.drones",
+        "compliance_tags": ["lithium_battery"],
+        "attributes": {
+            "weight_lbs": 1.8,
+            "has_import_certificate": False,
+        },
+    },
+    {
+        "sku": "GROC-003",
+        "name": "Costa Rica Wellness Tea",
+        "item_type": "base",
+        "category_path": "grocery.beverages.tea",
+        "compliance_tags": ["rtca_regulated"],
+        "attributes": {
+            "weight_lbs": 0.6,
+        },
+    },
+    {
+        "sku": "HOME-003",
+        "name": "Bilingual Metric Measuring Cup",
+        "item_type": "base",
+        "category_path": "home.kitchen.tools",
+        "compliance_tags": ["label_sensitive"],
+        "attributes": {
+            "weight_lbs": 0.8,
+            "has_bilingual_label": True,
+            "uses_metric_units": True,
+        },
+    },
+    {
+        "sku": "HOME-004",
+        "name": "Imperial Measuring Cup",
+        "item_type": "base",
+        "category_path": "home.kitchen.tools",
+        "compliance_tags": ["label_sensitive"],
+        "attributes": {
+            "weight_lbs": 0.8,
+            "has_bilingual_label": False,
+            "uses_metric_units": False,
+        },
+    },
+    {
+        "sku": "HOME-006",
+        "name": "Smart Fan Zero Stock Demo",
+        "item_type": "base",
+        "category_path": "home.climate",
+        "compliance_tags": [],
+        "attributes": {"weight_lbs": 9.5},
+    },
 ]
+
+LOW_RISK_SKUS = {"CLOTH-001", "TOY-001", "HOME-001", "HOME-002", "HOME-003", "HOME-004", "HOME-005", "HOME-006"}
+HIGH_RISK_SKUS = {"ALC-001", "ALC-002", "ALC-003", "ALC-004", "ALC-005", "FIRE-001", "FIRE-002", "PHARM-001", "CHEM-001", "CHEM-002"}
+
+for item in ITEMS:
+    attributes = item.setdefault("attributes", {})
+    if item["sku"] in HIGH_RISK_SKUS:
+        attributes.setdefault("risk_tier", "high")
+    elif item["sku"] in LOW_RISK_SKUS:
+        attributes.setdefault("risk_tier", "low")
+    else:
+        attributes.setdefault("risk_tier", "medium")
 
 FULFILLMENT_PATHS: list[dict[str, Any]] = [
     {
@@ -189,57 +315,165 @@ FULFILLMENT_PATHS: list[dict[str, Any]] = [
     },
 ]
 
-MARKETS = ["US-CA", "US-TX", "US-CO", "US-UT", "US-MA", "US-NY", "US-HI", "US-KY"]
+MARKETS = [
+    "US-CA",
+    "US-TX",
+    "US-CO",
+    "US-UT",
+    "US-MA",
+    "US-NY",
+    "US-HI",
+    "US-KY",
+    "MX-CDMX",
+    "CL-RM",
+    "CR-SJ",
+    "CA-ON",
+]
+
+MARKET_REGULATIONS: list[dict[str, Any]] = [
+    {"market_code": "US-CA", "display_name": "Los Angeles, California", "country_code": "US", "region_code": "CA", "currency_code": "USD", "language_codes": ["en"], "default_timezone": "America/Los_Angeles", "regulatory_summary": {"spotlight": "Prop 65 and age-restricted compliance"}},
+    {"market_code": "US-TX", "display_name": "Dallas, Texas", "country_code": "US", "region_code": "TX", "currency_code": "USD", "language_codes": ["en"], "default_timezone": "America/Chicago", "regulatory_summary": {"spotlight": "Alcohol hour restrictions and hazmat shipping"}},
+    {"market_code": "US-CO", "display_name": "Denver, Colorado", "country_code": "US", "region_code": "CO", "currency_code": "USD", "language_codes": ["en"], "default_timezone": "America/Denver", "regulatory_summary": {"spotlight": "Alcohol delivery and trusted marketplace sellers"}},
+    {"market_code": "US-UT", "display_name": "Salt Lake City, Utah", "country_code": "US", "region_code": "UT", "currency_code": "USD", "language_codes": ["en"], "default_timezone": "America/Denver", "regulatory_summary": {"spotlight": "Alcohol prohibition"}},
+    {"market_code": "US-MA", "display_name": "Boston, Massachusetts", "country_code": "US", "region_code": "MA", "currency_code": "USD", "language_codes": ["en"], "default_timezone": "America/New_York", "regulatory_summary": {"spotlight": "Consumer fireworks total ban"}},
+    {"market_code": "US-NY", "display_name": "New York, New York", "country_code": "US", "region_code": "NY", "currency_code": "USD", "language_codes": ["en"], "default_timezone": "America/New_York", "regulatory_summary": {"spotlight": "Fireworks restrictions"}},
+    {"market_code": "US-HI", "display_name": "Honolulu, Hawaii", "country_code": "US", "region_code": "HI", "currency_code": "USD", "language_codes": ["en"], "default_timezone": "Pacific/Honolulu", "regulatory_summary": {"spotlight": "No hazmat shipping"}},
+    {"market_code": "US-KY", "display_name": "Elizabethtown, Kentucky", "country_code": "US", "region_code": "KY", "currency_code": "USD", "language_codes": ["en"], "default_timezone": "America/New_York", "regulatory_summary": {"spotlight": "Dry county overlays"}},
+    {"market_code": "MX-CDMX", "display_name": "Mexico City, CDMX", "country_code": "MX", "region_code": "CDMX", "currency_code": "MXN", "language_codes": ["es"], "default_timezone": "America/Mexico_City", "regulatory_summary": {"spotlight": "NOM certification, IEPS, Spanish labeling"}},
+    {"market_code": "CL-RM", "display_name": "Santiago, Region Metropolitana", "country_code": "CL", "region_code": "RM", "currency_code": "CLP", "language_codes": ["es"], "default_timezone": "America/Santiago", "regulatory_summary": {"spotlight": "Black labels and lithium imports"}},
+    {"market_code": "CR-SJ", "display_name": "San Jose, Costa Rica", "country_code": "CR", "region_code": "SJ", "currency_code": "CRC", "language_codes": ["es"], "default_timezone": "America/Costa_Rica", "regulatory_summary": {"spotlight": "RTCA and VAT registration"}},
+    {"market_code": "CA-ON", "display_name": "Toronto, Ontario", "country_code": "CA", "region_code": "ON", "currency_code": "CAD", "language_codes": ["en", "fr"], "default_timezone": "America/Toronto", "regulatory_summary": {"spotlight": "Bilingual labels and metric units"}},
+]
+
+FULFILLMENT_NODES: list[dict[str, Any]] = [
+    {"node_id": "FC-DAL-01", "market_code": "US-TX", "node_name": "Dallas FC", "node_type": "fc", "latitude": 32.7767, "longitude": -96.7970, "enabled": True, "metadata": {"role": "primary_fc"}},
+    {"node_id": "3P-WAREHOUSE", "market_code": "US-TX", "node_name": "Marketplace Warehouse", "node_type": "3p", "latitude": 32.7810, "longitude": -96.8000, "enabled": True, "metadata": {"role": "marketplace"}},
+    {"node_id": "STORE-DAL-A", "market_code": "US-TX", "node_name": "Store A", "node_type": "store", "latitude": 32.7810, "longitude": -96.8040, "enabled": True, "metadata": {"role": "primary_store"}},
+    {"node_id": "STORE-DAL-B", "market_code": "US-TX", "node_name": "Store B", "node_type": "store", "latitude": 32.8594, "longitude": -96.7555, "enabled": True, "metadata": {"role": "backup_store"}},
+    {"node_id": "STORE-DAL-C", "market_code": "US-TX", "node_name": "Store C", "node_type": "store", "latitude": 32.9000, "longitude": -96.6200, "enabled": False, "metadata": {"role": "disabled_store"}},
+]
+
+GEO_ZONES: list[dict[str, Any]] = [
+    {
+        "zone_code": "US-TX-SCHOOL-001",
+        "market_code": "US-TX",
+        "zone_name": "Elm Street School Buffer",
+        "zone_type": "school_zone",
+        "geometry_type": "polygon",
+        "polygon_coordinates": [
+            {"lat": 32.7800, "lng": -96.8050},
+            {"lat": 32.7850, "lng": -96.8050},
+            {"lat": 32.7850, "lng": -96.7970},
+            {"lat": 32.7800, "lng": -96.7970},
+        ],
+        "hex_cells": ["hex-school-001", "hex-school-002"],
+        "blocked_paths": ["ship_to_home", "ship_from_store"],
+        "metadata": {
+            "explanation": "Alcohol delivery is blocked inside the school safety zone around Elm Street School.",
+        },
+        "active": True,
+    }
+]
 
 SELLERS: list[dict[str, Any]] = [
     {
-        "seller_id": WALMART_SELLER_ID,
-        "name": "Walmart",
+        "seller_id": PLATFORM_SELLER_ID,
+        "name": "MegaMart",
         "trust_tier": "top_rated",
         "defect_rate": 0.001,
+        "return_rate": 0.024,
         "on_time_rate": 0.99,
         "total_orders": 1000000,
+        "in_stock_rate": 0.995,
+        "cancellation_rate": 0.002,
+        "valid_tracking_rate": 0.999,
+        "seller_response_rate": 0.998,
+        "item_not_received_rate": 0.003,
+        "negative_feedback_rate": 0.005,
+        "uses_wfs": False,
+        "vat_registered": True,
+        "ipi_score": 910,
     },
     {
         "seller_id": ACME_WINES_SELLER_ID,
         "name": "Acme Wines",
         "trust_tier": "trusted",
         "defect_rate": 0.015,
+        "return_rate": 0.04,
         "on_time_rate": 0.96,
         "total_orders": 5000,
+        "in_stock_rate": 0.982,
+        "cancellation_rate": 0.008,
+        "valid_tracking_rate": 0.995,
+        "seller_response_rate": 0.98,
+        "item_not_received_rate": 0.01,
+        "negative_feedback_rate": 0.012,
+        "uses_wfs": True,
+        "vat_registered": True,
+        "ipi_score": 480,
     },
     {
         "seller_id": TECHGEAR_SELLER_ID,
         "name": "TechGear Pro",
         "trust_tier": "trusted",
         "defect_rate": 0.02,
+        "return_rate": 0.045,
         "on_time_rate": 0.95,
         "total_orders": 8000,
+        "in_stock_rate": 0.978,
+        "cancellation_rate": 0.01,
+        "valid_tracking_rate": 0.992,
+        "seller_response_rate": 0.97,
+        "item_not_received_rate": 0.013,
+        "negative_feedback_rate": 0.015,
+        "uses_wfs": True,
+        "vat_registered": True,
+        "ipi_score": 455,
     },
     {
         "seller_id": NEWSELLER_SELLER_ID,
         "name": "NewSeller123",
         "trust_tier": "new",
         "defect_rate": 0.08,
+        "return_rate": 0.09,
         "on_time_rate": 0.85,
         "total_orders": 50,
+        "in_stock_rate": 0.71,
+        "cancellation_rate": 0.11,
+        "valid_tracking_rate": 0.92,
+        "seller_response_rate": 0.81,
+        "item_not_received_rate": 0.05,
+        "negative_feedback_rate": 0.04,
+        "uses_wfs": False,
+        "vat_registered": False,
+        "ipi_score": 180,
     },
     {
         "seller_id": CHEMSUPPLY_SELLER_ID,
         "name": "ChemSupply Inc",
         "trust_tier": "standard",
         "defect_rate": 0.045,
+        "return_rate": 0.07,
         "on_time_rate": 0.90,
         "total_orders": 2000,
+        "in_stock_rate": 0.87,
+        "cancellation_rate": 0.05,
+        "valid_tracking_rate": 0.985,
+        "seller_response_rate": 0.93,
+        "item_not_received_rate": 0.03,
+        "negative_feedback_rate": 0.025,
+        "uses_wfs": False,
+        "vat_registered": False,
+        "ipi_score": 290,
     },
 ]
 
 # Maps seller UUID -> list of SKUs they offer on marketplace
 SELLER_OFFERS: dict[str, list[str]] = {
-    ACME_WINES_SELLER_ID: ["ALC-001", "ALC-002", "ALC-003"],
-    TECHGEAR_SELLER_ID: ["ELEC-001", "ELEC-002", "FIRE-002"],
-    NEWSELLER_SELLER_ID: ["ELEC-001", "TOY-001", "ALC-002"],
-    CHEMSUPPLY_SELLER_ID: ["CHEM-001", "CHEM-002"],
+    ACME_WINES_SELLER_ID: ["ALC-001", "ALC-002", "ALC-003", "ALC-004", "ALC-005"],
+    TECHGEAR_SELLER_ID: ["ELEC-001", "ELEC-002", "FIRE-002", "HOME-002", "HOME-005", "HOME-003", "HOME-004"],
+    NEWSELLER_SELLER_ID: ["ELEC-001", "TOY-001", "ALC-002", "ALC-005", "GROC-003"],
+    CHEMSUPPLY_SELLER_ID: ["CHEM-001", "CHEM-002", "GROC-003"],
 }
 
 # ---------------------------------------------------------------------------
@@ -255,6 +489,7 @@ def _rule(
     reason: str,
     *,
     rule_type: str = "geographic",
+    regulation_type: str = "GENERAL",
     conflict_group: str | None = None,
     market_codes: list[str] | None = None,
     category_paths: list[str] | None = None,
@@ -271,9 +506,24 @@ def _rule(
     if gate:
         rule_def["gate"] = gate
 
+    rule_metadata = dict(metadata or {})
+    rule_metadata.setdefault("cause_code", rule_name)
+    rule_metadata.setdefault("source_service", "eligibility-service")
+    rule_metadata.setdefault("source_entity", "compliance_rules")
+    rule_metadata.setdefault("source_field", "rule_definition")
+    rule_metadata.setdefault("suggested_fix", f"Resolve {rule_name.replace('_', ' ')} and re-run the evaluation.")
+    rule_metadata.setdefault(
+        "diagnosis",
+        {
+            "en": reason,
+            "es": reason,
+        },
+    )
+
     return {
         "rule_name": rule_name,
         "rule_type": rule_type,
+        "regulation_type": regulation_type,
         "action": action,
         "priority": priority,
         "conflict_group": conflict_group,
@@ -283,7 +533,7 @@ def _rule(
         "blocked_paths": blocked_paths,
         "rule_definition": rule_def,
         "reason": reason,
-        "metadata": metadata,
+        "metadata": rule_metadata,
         "effective_from": EFFECTIVE_FROM,
         "enabled": True,
     }
@@ -431,7 +681,7 @@ COMPLIANCE_RULES: list[dict[str, Any]] = [
         rule_type="product",
         compliance_tags=["firearm"],
         blocked_paths=["marketplace_3p"],
-        metadata={"policy": "Walmart marketplace policy", "jurisdiction": "corporate"},
+        metadata={"policy": "Marketplace seller quality standards", "jurisdiction": "corporate"},
     ),
     _rule(
         "firearms_age_verification_21",
@@ -466,7 +716,7 @@ COMPLIANCE_RULES: list[dict[str, Any]] = [
         "Firearm purchase — background check and ID required at pickup",
         rule_type="product",
         compliance_tags=["firearm"],
-        metadata={"policy": "Walmart firearms policy", "jurisdiction": "corporate"},
+        metadata={"policy": "Marketplace seller quality standards", "jurisdiction": "corporate"},
     ),
     # -----------------------------------------------------------------------
     # Scenario 6: Seller hazmat quality gate (ChemSupply defect > 3%)
@@ -494,7 +744,7 @@ COMPLIANCE_RULES: list[dict[str, Any]] = [
                 "seller_defect_rate": {"operator": "less_than", "value": 0.03},
             },
         },
-        metadata={"policy": "Walmart seller quality standards"},
+        metadata={"policy": "Marketplace seller quality standards"},
     ),
     # -----------------------------------------------------------------------
     # Scenario 7: 3P alcohol — age req + seller trust gate + advisory
@@ -541,7 +791,7 @@ COMPLIANCE_RULES: list[dict[str, Any]] = [
             "type": "trust_tier",
             "required_tiers": ["trusted", "top_rated"],
         },
-        metadata={"policy": "Walmart alcohol seller policy"},
+        metadata={"policy": "Marketplace seller quality standards"},
     ),
     _rule(
         "alcohol_responsibility_advisory",
@@ -581,7 +831,7 @@ COMPLIANCE_RULES: list[dict[str, Any]] = [
             "type": "trust_tier",
             "required_tiers": ["trusted", "top_rated"],
         },
-        metadata={"policy": "Walmart electronics seller standards"},
+        metadata={"policy": "Marketplace seller quality standards"},
     ),
     # -----------------------------------------------------------------------
     # Scenario 9: Pseudoephedrine — ID required + quantity limit
@@ -807,7 +1057,7 @@ COMPLIANCE_RULES: list[dict[str, Any]] = [
                 "seller_defect_rate": {"operator": "less_than", "value": 0.05},
             },
         },
-        metadata={"policy": "Walmart seller performance standards"},
+        metadata={"policy": "Marketplace seller quality standards"},
     ),
     _rule(
         "heavy_item_ship_from_store",
@@ -826,6 +1076,194 @@ COMPLIANCE_RULES: list[dict[str, Any]] = [
         rule_type="product",
         blocked_paths=["ship_from_store"],
         metadata={"policy": "Ship-from-store weight limit"},
+    ),
+    _rule(
+        "seller_ipi_global_gate",
+        "GATE",
+        205,
+        {
+            "all": [
+                {"name": "seller_ipi_score", "operator": "less_than", "value": 300},
+            ]
+        },
+        "Seller IPI must be at least 300 for regulated transactability workflows",
+        rule_type="seller",
+        blocked_paths=ALL_PATHS,
+        gate={
+            "type": "metric_threshold",
+            "thresholds": {
+                "seller_ipi_score": {"operator": "greater_than_or_equal_to", "value": 300},
+            },
+        },
+        metadata={"policy": "IPI gate", "source_service": "seller-service"},
+    ),
+    _rule(
+        "seller_ipi_marketplace_block",
+        "BLOCK",
+        150,
+        {
+            "all": [
+                {"name": "seller_ipi_score", "operator": "less_than", "value": 200},
+                {"name": "fulfillment_path", "operator": "equal_to", "value": "marketplace_3p"},
+            ]
+        },
+        "Sellers below 200 IPI are blocked from marketplace transactability",
+        rule_type="seller",
+        blocked_paths=["marketplace_3p"],
+        metadata={"policy": "IPI marketplace block", "source_service": "seller-service"},
+    ),
+    _rule(
+        "mexico_nom_certification_block",
+        "BLOCK",
+        18,
+        {
+            "all": [
+                {"name": "market_code", "operator": "equal_to", "value": "MX-CDMX"},
+                {"name": "item_requires_nom", "operator": "equal_to", "value": True},
+                {"name": "item_has_nom_certificate", "operator": "equal_to", "value": False},
+            ]
+        },
+        "Mexico requires NOM certification before this product can be sold.",
+        rule_type="regulation",
+        regulation_type="CERTIFICATION",
+        market_codes=["MX-CDMX"],
+        blocked_paths=ALL_PATHS,
+    ),
+    _rule(
+        "mexico_ieps_warning",
+        "WARN",
+        120,
+        {
+            "all": [
+                {"name": "market_code", "operator": "equal_to", "value": "MX-CDMX"},
+                {"name": "compliance_tags", "operator": "contains", "value": "sugary_drink"},
+            ]
+        },
+        "IEPS excise tax applies to sugary alcohol beverages in Mexico.",
+        rule_type="regulation",
+        regulation_type="TAX",
+        market_codes=["MX-CDMX"],
+    ),
+    _rule(
+        "mexico_spanish_label_block",
+        "BLOCK",
+        22,
+        {
+            "all": [
+                {"name": "market_code", "operator": "equal_to", "value": "MX-CDMX"},
+                {"name": "item_has_spanish_label", "operator": "equal_to", "value": False},
+            ]
+        },
+        "Mexico labeling requires Spanish packaging for this item.",
+        rule_type="regulation",
+        regulation_type="LABELING",
+        market_codes=["MX-CDMX"],
+        blocked_paths=ALL_PATHS,
+    ),
+    _rule(
+        "chile_black_label_warning",
+        "WARN",
+        130,
+        {
+            "all": [
+                {"name": "market_code", "operator": "equal_to", "value": "CL-RM"},
+                {"name": "compliance_tags", "operator": "contains", "value": "sugary_food"},
+                {"name": "item_has_black_label", "operator": "equal_to", "value": True},
+            ]
+        },
+        "Chile black-label packaging is required for this high-sugar product.",
+        rule_type="regulation",
+        regulation_type="LABELING",
+        market_codes=["CL-RM"],
+    ),
+    _rule(
+        "chile_lithium_import_block",
+        "BLOCK",
+        14,
+        {
+            "all": [
+                {"name": "market_code", "operator": "equal_to", "value": "CL-RM"},
+                {"name": "compliance_tags", "operator": "contains", "value": "lithium_battery"},
+                {"name": "item_has_import_certificate", "operator": "equal_to", "value": False},
+            ]
+        },
+        "Chile requires an import certificate for lithium battery products.",
+        rule_type="regulation",
+        regulation_type="IMPORT",
+        market_codes=["CL-RM"],
+        blocked_paths=ALL_PATHS,
+    ),
+    _rule(
+        "costa_rica_vat_registration_gate",
+        "GATE",
+        180,
+        {
+            "all": [
+                {"name": "market_code", "operator": "equal_to", "value": "CR-SJ"},
+                {"name": "compliance_tags", "operator": "contains", "value": "rtca_regulated"},
+                {"name": "seller_vat_registered", "operator": "equal_to", "value": False},
+            ]
+        },
+        "Costa Rica requires VAT registration before this regulated item can transact.",
+        rule_type="seller",
+        regulation_type="TAX",
+        market_codes=["CR-SJ"],
+        blocked_paths=["marketplace_3p"],
+        gate={
+            "type": "market_registration",
+            "thresholds": {
+                "seller_vat_registered": True,
+            },
+        },
+        metadata={"source_service": "seller-service"},
+    ),
+    _rule(
+        "canada_bilingual_label_block",
+        "BLOCK",
+        16,
+        {
+            "all": [
+                {"name": "market_code", "operator": "equal_to", "value": "CA-ON"},
+                {"name": "item_has_bilingual_label", "operator": "equal_to", "value": False},
+            ]
+        },
+        "Canada requires bilingual labeling in English and French for this item.",
+        rule_type="regulation",
+        regulation_type="LABELING",
+        market_codes=["CA-ON"],
+        blocked_paths=ALL_PATHS,
+    ),
+    _rule(
+        "canada_metric_units_block",
+        "BLOCK",
+        17,
+        {
+            "all": [
+                {"name": "market_code", "operator": "equal_to", "value": "CA-ON"},
+                {"name": "item_uses_metric_units", "operator": "equal_to", "value": False},
+            ]
+        },
+        "Canada requires metric units on product labeling for this item.",
+        rule_type="regulation",
+        regulation_type="LABELING",
+        market_codes=["CA-ON"],
+        blocked_paths=ALL_PATHS,
+    ),
+    _rule(
+        "school_zone_alcohol_delivery_block",
+        "BLOCK",
+        12,
+        {
+            "all": [
+                {"name": "compliance_tags", "operator": "contains", "value": "alcohol"},
+                {"name": "matched_zone_codes", "operator": "within_zone", "value": ["US-TX-SCHOOL-001"]},
+            ]
+        },
+        "Alcohol delivery is restricted inside school-adjacent safety zones.",
+        rule_type="geo_zone",
+        regulation_type="GEOFENCE",
+        blocked_paths=["ship_to_home", "ship_from_store"],
+        metadata={"source_service": "geo-service", "source_entity": "geo_restriction_zones", "source_field": "zone_code"},
     ),
 ]
 
@@ -913,8 +1351,8 @@ async def seed_fulfillment_paths(client: httpx.AsyncClient) -> dict[str, int]:
 async def seed_markets(
     client: httpx.AsyncClient, path_ids: dict[str, int]
 ) -> None:
-    """Enable all 4 fulfillment paths in all 8 markets."""
-    print("\n[4/8] Creating market configurations...")
+    """Enable all fulfillment paths across all configured markets."""
+    print("\n[4/11] Creating market configurations...")
     for market in MARKETS:
         for i, path_code in enumerate(
             ["ship_to_home", "pickup", "ship_from_store", "marketplace_3p"]
@@ -935,12 +1373,20 @@ async def seed_markets(
         print(f"  [OK] {market}: 4 paths enabled")
 
 
+async def seed_market_regulations(client: httpx.AsyncClient) -> None:
+    print("\n[5/11] Creating market regulations...")
+    for market in MARKET_REGULATIONS:
+        r = await client.post("/v1/market-regulations", json=market)
+        status = "OK" if r.status_code in (200, 201) else f"SKIP {r.status_code}"
+        print(f"  [{status}] {market['market_code']} -> {market['display_name']}")
+
+
 async def seed_seller_offers(
     client: httpx.AsyncClient,
     sku_to_id: dict[str, str],
 ) -> None:
     """Link marketplace sellers to the items they offer."""
-    print("\n[5/8] Creating seller offers...")
+    print("\n[6/11] Creating seller offers...")
     for seller_id, skus in SELLER_OFFERS.items():
         seller_name = next(s["name"] for s in SELLERS if s["seller_id"] == seller_id)
         for sku in skus:
@@ -963,29 +1409,53 @@ async def seed_inventory(
     - 1P items: qty=50 at FC-DAL-01 on ship_to_home, pickup, ship_from_store
     - 3P marketplace items: qty=25 at 3P-WAREHOUSE on marketplace_3p for each seller
     """
-    print("\n[6/8] Creating inventory positions...")
+    print("\n[7/11] Creating inventory positions...")
     one_p_paths = ["ship_to_home", "pickup", "ship_from_store"]
 
-    # 1P inventory for all 15 items at FC-DAL-01
+    # 1P inventory for all catalog items at FC-DAL-01
     count = 0
     for item in ITEMS:
         sku = item["sku"]
         item_id = sku_to_id[sku]
+        default_qty = 0 if sku == "HOME-006" else 50
         for path_code in one_p_paths:
+            payload = {
+                "item_id": item_id,
+                "fulfillment_node": "FC-DAL-01",
+                "path_id": path_ids[path_code],
+                "seller_id": PLATFORM_SELLER_ID,
+                "available_qty": default_qty,
+                "reserved_qty": 0,
+                "node_enabled": True,
+                "confidence_score": "0.990",
+                "verification_source": "seed",
+                "oos_30d_count": 0,
+                "node_type": "fc",
+            }
+            if sku == "ELEC-002" and path_code == "pickup":
+                payload.update(
+                    {
+                        "fulfillment_node": "STORE-DAL-A",
+                        "confidence_score": "0.720",
+                        "last_verified_at": "2026-04-06T09:00:00-07:00",
+                        "oos_30d_count": 5,
+                        "node_type": "store",
+                    }
+                )
+            if sku == "TOY-001" and path_code == "pickup":
+                payload.update(
+                    {
+                        "fulfillment_node": "STORE-DAL-A",
+                        "available_qty": 0,
+                        "node_type": "store",
+                    }
+                )
             r = await client.post(
                 "/v1/inventory/positions",
-                json={
-                    "item_id": item_id,
-                    "fulfillment_node": "FC-DAL-01",
-                    "path_id": path_ids[path_code],
-                    "seller_id": WALMART_SELLER_ID,
-                    "available_qty": 50,
-                    "reserved_qty": 0,
-                    "node_enabled": True,
-                },
+                json=payload,
             )
             count += 1
-    print(f"  [OK] {count} 1P positions (FC-DAL-01, Walmart, qty=50)")
+    print(f"  [OK] {count} 1P positions seeded")
 
     # 3P inventory for marketplace seller offers at 3P-WAREHOUSE
     mp_count = 0
@@ -1003,16 +1473,69 @@ async def seed_inventory(
                     "available_qty": 25,
                     "reserved_qty": 0,
                     "node_enabled": True,
+                    "confidence_score": "0.960",
+                    "verification_source": "seed",
+                    "oos_30d_count": 0,
+                    "node_type": "3p",
                 },
             )
             mp_count += 1
         print(f"  [OK] {seller_name}: {len(skus)} 3P positions (3P-WAREHOUSE, qty=25)")
     print(f"  Total: {count} 1P + {mp_count} 3P = {count + mp_count} positions")
 
+    # Nearby node rescue + store confidence scenarios
+    toy_id = sku_to_id["TOY-001"]
+    extra_positions = [
+        {
+            "item_id": toy_id,
+            "fulfillment_node": "STORE-DAL-B",
+            "path_id": path_ids["pickup"],
+            "seller_id": PLATFORM_SELLER_ID,
+            "available_qty": 7,
+            "reserved_qty": 0,
+            "node_enabled": True,
+            "confidence_score": "0.970",
+            "verification_source": "seed",
+            "oos_30d_count": 0,
+            "node_type": "store",
+        },
+        {
+            "item_id": toy_id,
+            "fulfillment_node": "STORE-DAL-C",
+            "path_id": path_ids["pickup"],
+            "seller_id": PLATFORM_SELLER_ID,
+            "available_qty": 8,
+            "reserved_qty": 0,
+            "node_enabled": False,
+            "confidence_score": "0.960",
+            "verification_source": "seed",
+            "oos_30d_count": 0,
+            "node_type": "store",
+        },
+    ]
+    for payload in extra_positions:
+        await client.post("/v1/inventory/positions", json=payload)
+
+
+async def seed_fulfillment_nodes(client: httpx.AsyncClient) -> None:
+    print("\n[8/11] Creating fulfillment nodes...")
+    for node in FULFILLMENT_NODES:
+        r = await client.post("/v1/inventory/nodes", json=node)
+        status = "OK" if r.status_code in (200, 201) else f"SKIP {r.status_code}"
+        print(f"  [{status}] {node['node_id']} -> {node['node_name']}")
+
+
+async def seed_geo_zones(client: httpx.AsyncClient) -> None:
+    print("\n[9/11] Creating geo restriction zones...")
+    for zone in GEO_ZONES:
+        r = await client.post("/v1/geo-zones", json=zone)
+        status = "OK" if r.status_code in (200, 201) else f"SKIP {r.status_code}"
+        print(f"  [{status}] {zone['zone_code']}")
+
 
 async def seed_rules(client: httpx.AsyncClient) -> dict[str, int]:
     """Create all 25 compliance rules. Returns {rule_name: rule_id}."""
-    print("\n[7/8] Creating compliance rules...")
+    print("\n[10/11] Creating compliance rules...")
     name_to_id: dict[str, int] = {}
     for i, rule in enumerate(COMPLIANCE_RULES, 1):
         r = await client.post("/v1/rules", json=rule)
@@ -1027,7 +1550,7 @@ async def seed_rules(client: httpx.AsyncClient) -> dict[str, int]:
 
 def print_test_commands(sku_to_id: dict[str, str]) -> None:
     """Print curl commands for each of the 10 demo scenarios."""
-    print("\n[8/8] Test curl commands for each scenario:")
+    print("\n[11/11] Test curl commands for seed verification:")
     print("=" * 80)
 
     wine_id = sku_to_id["ALC-001"]
@@ -1290,7 +1813,7 @@ def print_test_commands(sku_to_id: dict[str, str]) -> None:
             f"-d '"
             f'{{"item_id":"{milk_id}","fulfillment_node":"FC-DAL-01",'
             f'"event_type":"adjustment","path_id":{pid},'
-            f'"seller_id":"{WALMART_SELLER_ID}","delta":-50}}'
+            f'"seller_id":"{PLATFORM_SELLER_ID}","delta":-50}}'
             f"' | python3 -m json.tool"
             f"  # {path_name}"
         )
@@ -1306,7 +1829,7 @@ def print_test_commands(sku_to_id: dict[str, str]) -> None:
     )
 
     print("\n" + "=" * 80)
-    print("Seed complete. All 10 scenarios ready for testing.")
+    print("Seed complete. Scenario catalog is ready through /v1/demo/scenarios.")
 
 
 # ---------------------------------------------------------------------------
@@ -1317,13 +1840,16 @@ def print_test_commands(sku_to_id: dict[str, str]) -> None:
 async def seed():
     async with httpx.AsyncClient(base_url=BASE_URL, timeout=30) as client:
         print("=" * 60)
-        print("  Walmart Transactability Engine — Full Demo Seed")
+        print("  Marketplace Eligibility Engine — Full Demo Seed")
         print("=" * 60)
         print(f"  Target: {BASE_URL}")
         print(f"  Items: {len(ITEMS)}")
         print(f"  Sellers: {len(SELLERS)}")
         print(f"  Fulfillment Paths: {len(FULFILLMENT_PATHS)}")
         print(f"  Markets: {len(MARKETS)}")
+        print(f"  Market Regulations: {len(MARKET_REGULATIONS)}")
+        print(f"  Fulfillment Nodes: {len(FULFILLMENT_NODES)}")
+        print(f"  Geo Zones: {len(GEO_ZONES)}")
         print(f"  Compliance Rules: {len(COMPLIANCE_RULES)}")
         print(f"  Seller Offer Links: {sum(len(v) for v in SELLER_OFFERS.values())}")
 
@@ -1339,16 +1865,25 @@ async def seed():
         # Step 4: Markets
         await seed_markets(client, path_ids)
 
-        # Step 5: Seller Offers
+        # Step 5: Market regulations
+        await seed_market_regulations(client)
+
+        # Step 6: Seller Offers
         await seed_seller_offers(client, sku_to_id)
 
-        # Step 6: Inventory
+        # Step 7: Inventory
         await seed_inventory(client, sku_to_id, path_ids)
 
-        # Step 7: Compliance Rules
+        # Step 8: Fulfillment nodes
+        await seed_fulfillment_nodes(client)
+
+        # Step 9: Geo zones
+        await seed_geo_zones(client)
+
+        # Step 10: Compliance Rules
         await seed_rules(client)
 
-        # Step 8: Print test commands
+        # Step 11: Print test commands
         print_test_commands(sku_to_id)
 
 

@@ -1,7 +1,7 @@
 [project]
-name = "walmart-transactability"
+name = "marketplace-eligibility-engine"
 version = "0.1.0"
-description = "Walmart-scale transactability engine"
+description = "Distributed compliance and eligibility engine for multi-market e-commerce"
 requires-python = ">=3.12"
 
 [tool.ruff]

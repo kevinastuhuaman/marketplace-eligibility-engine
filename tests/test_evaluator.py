@@ -114,6 +114,14 @@ class TestEvaluateCondition:
         cond = {"name": "customer_age", "operator": "greater_than", "value": 21}
         assert evaluate_condition(cond, {"customer_age": None}) is False
 
+    def test_within_zone_matches_list(self):
+        cond = {"name": "matched_zone_codes", "operator": "within_zone", "value": ["US-TX-SCHOOL-001"]}
+        assert evaluate_condition(cond, {"matched_zone_codes": ["US-TX-SCHOOL-001"]}) is True
+
+    def test_outside_zone_matches_when_zone_absent(self):
+        cond = {"name": "matched_zone_codes", "operator": "outside_zone", "value": ["US-TX-SCHOOL-001"]}
+        assert evaluate_condition(cond, {"matched_zone_codes": []}) is True
+
 
 # ===================================================================
 # Nested condition tests

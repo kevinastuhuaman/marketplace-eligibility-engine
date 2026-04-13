@@ -15,13 +15,13 @@ export function ProductPage() {
     <div className="max-w-screen-xl mx-auto px-4 py-6">
       <Link
         to="/"
-        className="text-sm text-walmart-blue hover:underline mb-4 inline-block"
+        className="text-sm text-brand-blue hover:underline mb-4 inline-block"
       >
         &larr; Back to products
       </Link>
 
       {isLoading && (
-        <div className="text-center py-12 text-walmart-gray-500">Loading...</div>
+        <div className="text-center py-12 text-brand-gray-500">Loading...</div>
       )}
       {error && (
         <div className="text-center py-12 text-red-600">

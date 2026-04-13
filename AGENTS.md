@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Repo-specific rules for `walmart-transactability`.
+Repo-specific rules for `marketplace-eligibility-engine`.
 
 ## Workflow
 

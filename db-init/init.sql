@@ -1,4 +1,4 @@
--- Walmart Transactability Engine — Database Initialization
+-- Marketplace Eligibility Engine — Database Initialization
 -- Creates the ltree extension and per-service schemas
 
 CREATE EXTENSION IF NOT EXISTS ltree;

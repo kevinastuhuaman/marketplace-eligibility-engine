@@ -1,4 +1,6 @@
 import { useEvaluationStore } from "../../store/evaluation-store";
+import { CircuitBreakerPanel } from "./CircuitBreakerPanel";
+import { DiagnosisTracePanel } from "./DiagnosisTracePanel";
 import { RulePipeline } from "./RulePipeline";
 import { FulfillmentDiagram } from "./FulfillmentDiagram";
 import { ConflictResolution } from "./ConflictResolution";
@@ -6,6 +8,7 @@ import { MetricsBar } from "./MetricsBar";
 
 export function DebugPanel() {
   const response = useEvaluationStore((s) => s.response);
+  const diagnosis = useEvaluationStore((s) => s.diagnosis);
 
   if (!response) {
     return (
@@ -43,6 +46,10 @@ export function DebugPanel() {
       <FulfillmentDiagram paths={response.paths} />
 
       <ConflictResolution resolutions={response.conflict_resolutions} />
+
+      <DiagnosisTracePanel diagnosis={diagnosis} />
+
+      <CircuitBreakerPanel />
     </div>
   );
 }

@@ -24,12 +24,12 @@ export function ProductGrid() {
           placeholder="Search products..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-md px-4 py-2 border border-walmart-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-walmart-blue focus:border-transparent"
+          className="w-full max-w-md px-4 py-2 border border-brand-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent"
         />
       </div>
 
       {isLoading && (
-        <div className="text-center py-12 text-walmart-gray-500">Loading products...</div>
+        <div className="text-center py-12 text-brand-gray-500">Loading products...</div>
       )}
       {error && (
         <div className="text-center py-12 text-red-600">

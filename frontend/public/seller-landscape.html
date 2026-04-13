@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Seller-Side Landscape</title>
+    <style>
+      :root {
+        --blue: #0071ce;
+        --blue-deep: #0a3c77;
+        --yellow: #ffc220;
+        --ink: #18212b;
+        --muted: #59636e;
+        --surface: #ffffff;
+        --surface-soft: #f5f8fb;
+        --border: #d7e0ea;
+        --success: #1f7a4b;
+        --warning: #b36a00;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(255, 194, 32, 0.22), transparent 28%),
+          linear-gradient(180deg, #eef6ff 0%, #ffffff 44%);
+      }
+
+      a {
+        color: var(--blue-deep);
+      }
+
+      .page {
+        width: min(1160px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 28px 0 64px;
+      }
+
+      .hero {
+        display: grid;
+        gap: 18px;
+        padding: 32px;
+        border-radius: 28px;
+        border: 1px solid rgba(0, 113, 206, 0.14);
+        background:
+          linear-gradient(135deg, rgba(0, 113, 206, 0.98), rgba(10, 60, 119, 0.96)),
+          linear-gradient(135deg, rgba(255, 194, 32, 0.16), transparent);
+        color: white;
+        box-shadow: 0 22px 70px rgba(0, 55, 110, 0.16);
+      }
+
+      .eyebrow {
+        width: fit-content;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.14);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.1rem, 4vw, 4rem);
+        line-height: 0.96;
+        max-width: 13ch;
+      }
+
+      .hero p {
+        margin: 0;
+        max-width: 72ch;
+        color: rgba(255, 255, 255, 0.92);
+        line-height: 1.6;
+      }
+
+      .hero-grid,
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .hero-stat {
+        padding: 16px 18px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .hero-stat strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 1.55rem;
+      }
+
+      .section {
+        margin-top: 28px;
+        padding: 28px;
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        box-shadow: 0 14px 48px rgba(25, 46, 74, 0.05);
+      }
+
+      .section h2 {
+        margin: 0 0 8px;
+        font-size: 1.45rem;
+      }
+
+      .section > p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .card,
+      .player,
+      .capability {
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: var(--surface-soft);
+      }
+
+      .card h3,
+      .player h3,
+      .capability h3 {
+        margin: 0 0 10px;
+        font-size: 1rem;
+      }
+
+      .player-grid {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .label {
+        display: inline-block;
+        margin-bottom: 10px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(0, 113, 206, 0.08);
+        color: var(--blue-deep);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .player p,
+      .card p,
+      .capability p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      ul {
+        margin: 10px 0 0;
+        padding-left: 18px;
+      }
+
+      li {
+        margin: 9px 0;
+        line-height: 1.5;
+      }
+
+      .stack {
+        margin-top: 18px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .capability strong {
+        color: var(--blue-deep);
+      }
+
+      .callout {
+        margin-top: 18px;
+        padding: 18px;
+        border-radius: 20px;
+        border: 1px solid rgba(179, 106, 0, 0.2);
+        background: rgba(255, 194, 32, 0.14);
+      }
+
+      .callout strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--warning);
+      }
+
+      .sources {
+        margin-top: 18px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .source {
+        padding: 14px 16px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: #fff;
+      }
+
+      .source strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .footer {
+        margin-top: 28px;
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+
+      @media (max-width: 900px) {
+        .hero-grid,
+        .grid-3,
+        .player-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <div class="eyebrow">Seller-Side Research</div>
+        <h1>Buyer trust depends on seller tooling.</h1>
+        <p>
+          If sellers cannot update inventory easily, forecast demand, manage low stock,
+          or recover when an item goes unavailable, the customer experience eventually
+          breaks. The best marketplaces do not only optimize the buyer side. They give
+          sellers a practical operating system.
+        </p>
+        <div class="hero-grid">
+          <div class="hero-stat">
+            <strong>Amazon</strong>
+            Heavyweight seller operating system with logistics, forecasting, and analytics
+          </div>
+          <div class="hero-stat">
+            <strong>eBay</strong>
+            Midweight marketplace tools focused on research, pricing, and listing guidance
+          </div>
+          <div class="hero-stat">
+            <strong>Etsy</strong>
+            Lightweight seller controls focused on simplicity, sync, and restock alerts
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>The Blind Spot You Identified</h2>
+        <p>
+          This is a real strategic gap. A marketplace can care deeply about customer
+          availability, but if sellers lack good tools, the platform keeps absorbing the
+          symptoms instead of fixing the source.
+        </p>
+        <div class="grid-3" style="margin-top: 18px;">
+          <div class="card">
+            <h3>What buyers feel</h3>
+            <ul>
+              <li>Unexpected out-of-stocks.</li>
+              <li>Weak substitutes.</li>
+              <li>Slow or inconsistent fulfillment.</li>
+              <li>Listings that look available but are not.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>What sellers feel</h3>
+            <ul>
+              <li>Catalog upload is tedious or error-prone.</li>
+              <li>Inventory updates are manual or delayed.</li>
+              <li>Demand planning is guesswork.</li>
+              <li>They are judged on outcomes without enough operational help.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>What the platform should do</h3>
+            <ul>
+              <li>Make listing and inventory updates easy.</li>
+              <li>Give clear stock and replenishment recommendations.</li>
+              <li>Surface seller-side risks before they hurt buyers.</li>
+              <li>Reward reliable operators and coach weaker ones.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>What Leading Platforms Actually Offer Sellers</h2>
+        <p>
+          There is a clear spectrum in the market, from full operating systems to simple
+          dashboards and alerts.
+        </p>
+        <div class="player-grid">
+          <article class="player">
+            <div class="label">Amazon</div>
+            <h3>The strongest seller operating model</h3>
+            <p>
+              Amazon gives sellers tools across listing creation, inventory management,
+              demand discovery, fulfillment, replenishment, mobile operations, and
+              third-party app integrations. This is closer to an operating system than a
+              simple marketplace dashboard.
+            </p>
+            <ul>
+              <li>Seller app: create listings, update inventory, manage orders, and respond on mobile.</li>
+              <li>FBA Inventory and IPI: track inventory health, aging stock, stranded inventory, and sell-through.</li>
+              <li>AWD auto-replenishment: Amazon can move stock into fulfillment centers automatically.</li>
+              <li>Brand Analytics and Product Opportunity Explorer: sellers get demand and search insights, not just order history.</li>
+              <li>Selling Partner Appstore and Veeqo: Amazon openly supports an ecosystem of seller-side automation.</li>
+            </ul>
+          </article>
+
+          <article class="player">
+            <div class="label">Shopify</div>
+            <h3>Best merchant-ops benchmark</h3>
+            <p>
+              Shopify is not a marketplace, but it is one of the clearest examples of how
+              to help merchants run inventory better. It focuses on operational control:
+              inventory states, purchase orders, transfers, ABC analysis, days remaining,
+              low-stock alerts, and mobile scanning.
+            </p>
+            <ul>
+              <li>Track inventory across locations with history and status views.</li>
+              <li>Manage purchase orders and receive partial shipments cleanly.</li>
+              <li>Use ABC analysis and product inventory analytics to prioritize stock.</li>
+              <li>Automate low-stock notifications and out-of-stock handling with Shopify Flow.</li>
+              <li>Support barcode scanning and stock counting from mobile devices.</li>
+            </ul>
+          </article>
+
+          <article class="player">
+            <div class="label">eBay</div>
+            <h3>Advisory marketplace tools</h3>
+            <p>
+              eBay is more seller-friendly than people often assume, but the model is more
+              advisory than operational. Sellers get research, pricing guidance, listing
+              improvements, restock advice, and bulk upload tools, but less end-to-end
+              physical inventory orchestration than Amazon.
+            </p>
+            <ul>
+              <li>Seller Hub consolidates selling tools in one place.</li>
+              <li>Product Research and Sourcing Insights help sellers see demand, competition, and pricing.</li>
+              <li>Growth Tab offers pricing, listing, and restock advice based on sales rate.</li>
+              <li>Uploadable templates support bulk listing and fulfillment activities.</li>
+              <li>Inference: eBay helps sellers make better decisions, but does less direct inventory execution for them.</li>
+            </ul>
+          </article>
+
+          <article class="player">
+            <div class="label">Etsy</div>
+            <h3>Lightweight tools for smaller sellers</h3>
+            <p>
+              Etsy is a good example of the small-marketplace approach. The tooling is
+              lighter, easier, and less predictive. Sellers get Shop Manager dashboards,
+              SKUs, processing profiles, restock requests, and channel sync with Square.
+            </p>
+            <ul>
+              <li>Shop Manager highlights orders, sold-out listings, stats, and educational resources.</li>
+              <li>SKU tools and quick edits help organize small catalogs.</li>
+              <li>Restock Requests let customers opt into back-in-stock demand signals.</li>
+              <li>Square integration keeps online listings in sync with in-person sales for eligible sellers.</li>
+              <li>Inference: Etsy optimizes for ease of use more than deep forecasting or logistics control.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>What Small Marketplaces Usually Do</h2>
+        <p>
+          This is the pattern that emerges from the docs above. It is an inference from the
+          product surfaces these companies expose.
+        </p>
+        <div class="stack">
+          <div class="capability">
+            <h3>Simple listing and catalog tools</h3>
+            <p>
+              Smaller marketplaces usually focus first on helping sellers list products,
+              upload in bulk, assign SKUs, and manage basic variations.
+            </p>
+          </div>
+          <div class="capability">
+            <h3>Basic inventory sync, not deep forecasting</h3>
+            <p>
+              They often support low-stock alerts, quantity editing, and channel sync, but
+              not sophisticated demand planning or automatic replenishment.
+            </p>
+          </div>
+          <div class="capability">
+            <h3>Service-quality coaching</h3>
+            <p>
+              Many marketplaces measure response time, shipping reliability, reviews, or
+              seller health because those metrics are easier to influence than supply chain
+              execution.
+            </p>
+          </div>
+          <div class="capability">
+            <h3>Third-party app reliance</h3>
+            <p>
+              Rather than building every seller workflow themselves, they rely heavily on
+              POS systems, spreadsheet uploads, and partner apps to close the gaps.
+            </p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Inference worth keeping</strong>
+          Amazon wins on depth because it helps sellers operate. Smaller marketplaces are
+          easier to join, but they offload more operational burden back to the seller.
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>What This Suggests For Marketplace Platforms</h2>
+        <p>
+          If a marketplace wants better customer-side reliability, it should also improve the
+          seller-side control tower. These are the highest-leverage moves.
+        </p>
+        <div class="stack">
+          <div class="capability">
+            <h3>1. Give sellers a cleaner inventory command center</h3>
+            <p>
+              Show stock by channel and node, update freshness, days of supply, low-stock
+              risk, and likely buyer impact. Make stale inventory visible to the seller, not
+              only to the platform.
+            </p>
+          </div>
+          <div class="capability">
+            <h3>2. Reduce update friction</h3>
+            <p>
+              Support bulk upload, mobile editing, barcode-style quick updates, and simpler
+              POS or ERP connectors. If updates are hard, sellers will always lag.
+            </p>
+          </div>
+          <div class="capability">
+            <h3>3. Move from reporting to recommendations</h3>
+            <p>
+              Do not just show “you are low on stock.” Show reorder points, suggested
+              quantities, expected depletion dates, and which SKUs are worth saving first.
+            </p>
+          </div>
+          <div class="capability">
+            <h3>4. Tie seller quality to inventory reliability</h3>
+            <p>
+              A seller score should reflect not only cancellation or defect rates, but also
+              inventory freshness, stock accuracy, and how often listed inventory fails in
+              fulfillment.
+            </p>
+          </div>
+          <div class="capability">
+            <h3>5. Help sellers recover demand</h3>
+            <p>
+              If an item is low or unavailable, suggest substitutes, sibling SKUs, nearby
+              nodes, or alternative fulfillment paths. Recovery should exist on the seller
+              side too, not just in the shopper experience.
+            </p>
+          </div>
+          <div class="capability">
+            <h3>6. Modernize around the edge of legacy systems</h3>
+            <p>
+              A marketplace does not need a perfect rip-and-replace. It can add seller-side
+              confidence, alerts, and recommendations around imperfect core systems, the
+              same way strong competitors layer better decisions on top of older infrastructure.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Sources</h2>
+        <p>
+          I prioritized official help pages, product pages, and platform documentation.
+        </p>
+        <div class="sources">
+          <div class="source">
+            <strong>Amazon</strong>
+            <a href="https://sell.amazon.com/tools/amazon-seller-app">Seller mobile app</a>,
+            <a href="https://sell.amazon.com/es/blog/fba-inventory">FBA Inventory tool</a>,
+            <a href="https://sell.amazon.com/programs/warehousing">Amazon Warehousing and Distribution</a>,
+            <a href="https://sell.amazon.com/tools/amazon-brand-analytics/">Brand Analytics</a>,
+            <a href="https://sell.amazon.com/tools/product-opportunity-explorer">Product Opportunity Explorer</a>,
+            <a href="https://sell.amazon.com/tools/selling-partner-appstore">Selling Partner Appstore</a>
+          </div>
+          <div class="source">
+            <strong>Shopify</strong>
+            <a href="https://help.shopify.com/en/manual/products/inventory/track-inventory">Managing inventory</a>,
+            <a href="https://help.shopify.com/en/manual/products/inventory/purchase-orders">Purchase orders</a>,
+            <a href="https://help.shopify.com/en/manual/products/inventory/abc-analysis">ABC inventory analysis</a>,
+            <a href="https://help.shopify.com/en/manual/products/analytics">Product analytics</a>,
+            <a href="https://help.shopify.com/en/manual/sell-in-person/shopify-pos/inventory-management/stocky/inventory-management">Inventory management and demand forecasting</a>
+          </div>
+          <div class="source">
+            <strong>eBay</strong>
+            <a href="https://www.ebay.com/sellercenter/selling/how-to-sell/seller-hub">Seller Hub</a>,
+            <a href="https://www.ebay.com/sellercenter/growth/ebay-research-tools">Research tools</a>,
+            <a href="https://pages.ebay.com/InventoryGuidance/">Growth Tab and Restock Advice</a>,
+            <a href="https://pages.ebay.com/sh/reports/help/uploadable-file-feeds/">Uploadable templates</a>
+          </div>
+          <div class="source">
+            <strong>Etsy</strong>
+            <a href="https://help.etsy.com/hc/en-us/articles/360000343908-How-to-Use-Your-Dashboard-to-Manage-Your-Shop">Shop dashboard</a>,
+            <a href="https://help.etsy.com/hc/en-us/articles/115015691707-How-to-Use-SKU-for-Your-Inventory">SKU inventory</a>,
+            <a href="https://help.etsy.com/hc/en-us/articles/360001712528-Etsy-Plus-Restock-Requests">Restock requests</a>,
+            <a href="https://help.etsy.com/hc/en-us/articles/360000905467-How-to-Use-Square-in-Your-Etsy-Shop">Square sync</a>,
+            <a href="https://help.etsy.com/hc/en-in/articles/115015588087-How-to-Set-Processing-Times-Processing-Profiles-and-Dispatch-By-Dates">Processing profiles</a>,
+            <a href="https://help.etsy.com/hc/en-us/articles/4403058372503-What-is-the-Star-Seller-Badge">Star Seller</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="footer">
+        Bottom line: if a marketplace improves only buyer-facing logic, it will still inherit
+        seller-side operational noise. The stronger competitive pattern is to help sellers
+        list, sync, forecast, replenish, and recover better so customer reliability rises
+        naturally.
+      </section>
+    </main>
+  </body>
+</html>

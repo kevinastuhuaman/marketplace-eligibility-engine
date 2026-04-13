@@ -13,6 +13,7 @@ const STATUS_COLORS: Record<string, string> = {
   conditional: "bg-yellow-500",
   gated: "bg-orange-500",
   blocked: "bg-red-500",
+  low_confidence: "bg-amber-400",
 };
 
 const STATUS_RING: Record<string, string> = {
@@ -20,6 +21,7 @@ const STATUS_RING: Record<string, string> = {
   conditional: "ring-yellow-500/30",
   gated: "ring-orange-500/30",
   blocked: "ring-red-500/30",
+  low_confidence: "ring-amber-400/30",
 };
 
 export function FulfillmentDiagram({ paths }: { paths: PathResult[] }) {

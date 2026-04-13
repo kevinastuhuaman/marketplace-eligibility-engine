@@ -18,7 +18,7 @@ class MarketFulfillment(Base):
     __tablename__ = "market_fulfillment"
     __table_args__ = {"schema": "eligibility_svc"}
 
-    market_code = Column(String(10), primary_key=True)
+    market_code = Column(String(16), primary_key=True)
     path_id = Column(Integer, primary_key=True)
     enabled = Column(Boolean, default=True)
     priority = Column(Integer, default=0)
