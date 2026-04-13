@@ -73,6 +73,8 @@ async def build_diagnosis(
     market_code = request_data["market_code"]
     if locale == "en":
         market_code = "US-EN"
+    elif locale == "es":
+        market_code = "MX-CDMX"
 
     for path in evaluation.get("paths", []):
         for severity, key in (("block", "violations"), ("gate", "gates")):

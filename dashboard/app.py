@@ -184,8 +184,8 @@ def path_status_color(status: str) -> str:
 # Page config
 # ---------------------------------------------------------------------------
 st.set_page_config(
-    page_title="Transactability Dashboard",
-    page_icon="W",
+    page_title="Eligibility Dashboard",
+    page_icon="🛒",
     layout="wide",
 )
 

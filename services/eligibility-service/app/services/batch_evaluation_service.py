@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import statistics
 import time
 
@@ -26,6 +27,6 @@ async def evaluate_batch(requests: list[dict], db: AsyncSession) -> dict:
         "failed": sum(1 for result in results if result.get("errors")),
         "total_ms": total_ms,
         "p50_ms": float(statistics.median(sorted_latencies)),
-        "p95_ms": float(sorted_latencies[min(len(sorted_latencies) - 1, max(0, int(len(sorted_latencies) * 0.95) - 1))]),
-        "p99_ms": float(sorted_latencies[min(len(sorted_latencies) - 1, max(0, int(len(sorted_latencies) * 0.99) - 1))]),
+        "p95_ms": float(sorted_latencies[min(len(sorted_latencies) - 1, math.ceil(len(sorted_latencies) * 0.95) - 1)]),
+        "p99_ms": float(sorted_latencies[min(len(sorted_latencies) - 1, math.ceil(len(sorted_latencies) * 0.99) - 1)]),
     }
