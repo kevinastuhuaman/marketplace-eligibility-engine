@@ -187,8 +187,8 @@ async def create_seller(payload: SellerCreate, request: Request, db: AsyncSessio
         negative_feedback_rate=payload.negative_feedback_rate,
         uses_wfs=payload.uses_wfs,
         vat_registered=payload.vat_registered,
-        ipi_score=payload.ipi_score if payload.ipi_score != 850 else score,
-        ipi_breakdown=payload.ipi_breakdown or breakdown,
+        ipi_score=payload.ipi_score if payload.ipi_score is not None else score,
+        ipi_breakdown=payload.ipi_breakdown if payload.ipi_breakdown is not None else breakdown,
         ipi_updated_at=datetime.now(PACIFIC),
         performance_updated_at=datetime.now(PACIFIC),
     )

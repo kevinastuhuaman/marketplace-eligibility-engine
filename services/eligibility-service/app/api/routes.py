@@ -8,6 +8,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from tenacity import RetryError
 
+from app.config import settings
 from app.db import get_db
 from app.models.compliance import ComplianceRule
 from app.models.fulfillment import FulfillmentPath, MarketFulfillment
@@ -91,11 +92,15 @@ async def diagnose_eligibility(
     response: Response,
     db: AsyncSession = Depends(get_db),
 ):
+    if not settings.enable_diagnosis:
+        response.status_code = 404
+        return {"error": "Diagnosis endpoint is disabled"}
     start_trace()
     try:
         request_data = json.loads(request.model_dump_json())
         evaluation = await evaluate(request_data, db)
-        return await build_diagnosis(db, request_data, evaluation)
+        locale = request_data.get("locale", "auto")
+        return await build_diagnosis(db, request_data, evaluation, locale=locale)
     except httpx.HTTPStatusError as exc:
         return _service_unavailable(response, str(exc))
     except (httpx.ConnectError, httpx.TimeoutException) as exc:
@@ -109,8 +114,12 @@ async def diagnose_eligibility(
 @router.post("/v1/evaluate/batch")
 async def evaluate_batch_route(
     payload: BatchEvaluateRequest,
+    response: Response,
     db: AsyncSession = Depends(get_db),
 ):
+    if not settings.enable_batch_evaluation:
+        response.status_code = 404
+        return {"error": "Batch evaluation endpoint is disabled"}
     requests = [json.loads(request.model_dump_json()) for request in payload.requests]
     return await evaluate_batch(requests, db)
 

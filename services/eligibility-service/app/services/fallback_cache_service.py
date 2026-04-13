@@ -1,22 +1,36 @@
 from __future__ import annotations
 
+from collections import OrderedDict
 from copy import deepcopy
 
-_cache: dict[str, dict[str, dict]] = {
-    "item-service": {},
-    "inventory-service": {},
-    "seller-service": {},
+_MAX_ENTRIES_PER_SERVICE = 1024
+
+_cache: dict[str, OrderedDict[str, dict]] = {
+    "item-service": OrderedDict(),
+    "inventory-service": OrderedDict(),
+    "seller-service": OrderedDict(),
 }
 
 
 def cache_value(service: str, key: str, value: dict) -> None:
-    if service in _cache:
-        _cache[service][key] = deepcopy(value)
+    if service not in _cache:
+        return
+    store = _cache[service]
+    store[key] = deepcopy(value)
+    store.move_to_end(key)
+    while len(store) > _MAX_ENTRIES_PER_SERVICE:
+        store.popitem(last=False)
 
 
 def get_cached_value(service: str, key: str) -> dict | None:
-    value = _cache.get(service, {}).get(key)
-    return deepcopy(value) if value else None
+    store = _cache.get(service)
+    if not store:
+        return None
+    value = store.get(key)
+    if value is None:
+        return None
+    store.move_to_end(key)
+    return deepcopy(value)
 
 
 def set_cached(service: str, key: str, value: dict) -> None:

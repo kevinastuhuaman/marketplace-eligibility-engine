@@ -27,9 +27,9 @@ async def get_item(item_id: UUID) -> dict | None:
     """Fetch item data from item-service. Returns None if not found."""
     cache_key = str(item_id)
     client = get_client()
-    state = ensure_request_allowed("item-service")
     started = perf_counter()
     try:
+        state = ensure_request_allowed("item-service")
         response = await get_with_retry(client, f"/v1/items/{item_id}")
         payload = response.json()
         record_success("item-service")

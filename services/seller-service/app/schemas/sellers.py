@@ -19,7 +19,7 @@ class SellerCreate(BaseModel):
     negative_feedback_rate: Decimal = Decimal("0.01")
     uses_wfs: bool = False
     vat_registered: bool = False
-    ipi_score: int = 850
+    ipi_score: int | None = None  # None = compute from metrics
     ipi_breakdown: dict | None = None
 
 

@@ -40,8 +40,11 @@ def point_in_polygon(latitude: float, longitude: float, polygon: list) -> bool:
     for i, point in enumerate(normalized):
         lat_i, lon_i = point
         lat_j, lon_j = normalized[j]
+        denominator = lon_j - lon_i
+        if abs(denominator) < 1e-9:
+            denominator = 1e-9
         intersects = ((lon_i > longitude) != (lon_j > longitude)) and (
-            latitude < (lat_j - lat_i) * (longitude - lon_i) / ((lon_j - lon_i) or 1e-9) + lat_i
+            latitude < (lat_j - lat_i) * (longitude - lon_i) / denominator + lat_i
         )
         if intersects:
             inside = not inside

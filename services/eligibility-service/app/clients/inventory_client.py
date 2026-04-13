@@ -34,7 +34,6 @@ async def get_availability(
     """Fetch inventory availability from inventory-service."""
     cache_key = f"{item_id}:{seller_id}:{','.join(str(path_id) for path_id in path_ids)}:{primary_node}:{','.join(nearby_nodes or [])}"
     client = get_client()
-    state = ensure_request_allowed("inventory-service")
     params = {
         "item_id": str(item_id),
         "path_ids": ",".join(str(p) for p in path_ids),
@@ -46,6 +45,7 @@ async def get_availability(
         params["nearby_nodes"] = ",".join(nearby_nodes)
     started = perf_counter()
     try:
+        state = ensure_request_allowed("inventory-service")
         response = await get_with_retry(
             client, "/v1/inventory/availability", params=params
         )

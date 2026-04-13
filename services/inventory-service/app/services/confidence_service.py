@@ -78,6 +78,13 @@ def summarize_path_confidence(positions: list, primary_node: str | None = None) 
             }
         position = candidates[0]
     else:
+        if not positions:
+            return {
+                "confidence_score": None,
+                "confidence_band": None,
+                "confidence_reason": None,
+                "last_verified_at": None,
+            }
         position = max(
             positions,
             key=lambda entry: (

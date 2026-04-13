@@ -141,7 +141,7 @@ export interface PathResult {
   violations: Violation[];
   requirements: Requirement[];
   gates: Gate[];
-  inventory_available: number | boolean | null;
+  inventory_available: number | null;
   confidence_score?: number | null;
   confidence_band?: ConfidenceBand | null;
   confidence_reason?: string | null;

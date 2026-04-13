@@ -26,9 +26,9 @@ def get_client() -> httpx.AsyncClient:
 async def get_seller(seller_id: UUID) -> dict | None:
     client = get_client()
     cache_key = str(seller_id)
-    state = ensure_request_allowed("seller-service")
     started = perf_counter()
     try:
+        state = ensure_request_allowed("seller-service")
         response = await get_with_retry(client, f"/v1/sellers/{seller_id}")
         payload = response.json()
         record_success("seller-service")
@@ -99,9 +99,9 @@ async def get_seller(seller_id: UUID) -> dict | None:
 
 async def check_offer(seller_id: UUID, item_id: UUID) -> dict:
     client = get_client()
-    state = ensure_request_allowed("seller-service")
     started = perf_counter()
     try:
+        state = ensure_request_allowed("seller-service")
         response = await get_with_retry(
             client, f"/v1/sellers/{seller_id}/offers/{item_id}"
         )
@@ -138,9 +138,9 @@ async def check_offer(seller_id: UUID, item_id: UUID) -> dict:
 
 async def get_ipi(seller_id: UUID) -> dict | None:
     client = get_client()
-    state = ensure_request_allowed("seller-service")
     started = perf_counter()
     try:
+        state = ensure_request_allowed("seller-service")
         response = await get_with_retry(client, f"/v1/sellers/{seller_id}/ipi")
         payload = response.json()
         record_success("seller-service")
@@ -162,9 +162,9 @@ async def get_ipi(seller_id: UUID) -> dict | None:
 
 async def get_performance(seller_id: UUID) -> dict | None:
     client = get_client()
-    state = ensure_request_allowed("seller-service")
     started = perf_counter()
     try:
+        state = ensure_request_allowed("seller-service")
         response = await get_with_retry(client, f"/v1/sellers/{seller_id}/performance")
         payload = response.json()
         record_success("seller-service")

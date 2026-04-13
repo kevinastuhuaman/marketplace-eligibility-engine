@@ -145,7 +145,7 @@ async def create_position(payload: PositionCreate, db: AsyncSession = Depends(ge
         reserved_qty=payload.reserved_qty,
         node_enabled=payload.node_enabled,
         confidence_score=payload.confidence_score,
-        last_verified_at=payload.last_verified_at,
+        **({"last_verified_at": payload.last_verified_at} if payload.last_verified_at is not None else {}),
         verification_source=payload.verification_source,
         oos_30d_count=payload.oos_30d_count,
         node_type=payload.node_type,

@@ -124,7 +124,10 @@ async def evaluate(request_data: dict, db: AsyncSession) -> dict:
         if not seller_data:
             return _error_response(item_id, market_code, start, ["Seller not found"])
 
-        ipi_data = await seller_client.get_ipi(seller_id)
+        try:
+            ipi_data = await seller_client.get_ipi(seller_id)
+        except Exception:
+            ipi_data = None
         if ipi_data:
             seller_data = {**seller_data, **ipi_data.get("breakdown", {}), "ipi_score": ipi_data.get("ipi_score")}
             seller_signal = {
@@ -133,7 +136,10 @@ async def evaluate(request_data: dict, db: AsyncSession) -> dict:
                 "rank_adjustment_pct": ipi_data.get("rank_adjustment_pct", 0),
                 "wfs_recommendation": ipi_data.get("wfs_recommendation"),
             }
-        performance_data = await seller_client.get_performance(seller_id)
+        try:
+            performance_data = await seller_client.get_performance(seller_id)
+        except Exception:
+            performance_data = None
         if performance_data:
             metric_map = {
                 metric["code"]: metric.get("actual")
