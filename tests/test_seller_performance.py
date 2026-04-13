@@ -1,4 +1,4 @@
-"""Unit tests for Walmart seller performance standards helpers."""
+"""Unit tests for marketplace seller performance standards helpers."""
 
 import os
 import sys

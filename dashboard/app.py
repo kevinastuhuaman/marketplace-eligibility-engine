@@ -1,4 +1,4 @@
-"""Walmart Transactability Engine -- Interactive Dashboard.
+"""Marketplace Eligibility Engine -- Interactive Dashboard.
 
 Four pages:
   1. Evaluation Tester  -- evaluate items against compliance rules
@@ -73,7 +73,7 @@ ZIP_FROM_MARKET = {
 
 # Known sellers from seed data (since there is no GET /v1/sellers list endpoint)
 KNOWN_SELLERS = {
-    "None - 1P (Walmart)": None,
+    "None - 1P (MegaMart)": None,
     "Acme Wines (trusted)": "00000000-0000-0000-0000-000000000002",
     "TechGear Pro (trusted)": "00000000-0000-0000-0000-000000000003",
     "NewSeller123 (new)": "00000000-0000-0000-0000-000000000004",
@@ -211,7 +211,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-st.title("Walmart Transactability Engine")
+st.title("Marketplace Eligibility Engine")
 
 tab1, tab2, tab3, tab4 = st.tabs(
     [

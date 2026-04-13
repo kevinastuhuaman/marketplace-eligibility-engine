@@ -53,11 +53,11 @@ function SellerPerformanceCard({
     <div className={`rounded-lg border p-3 ${statusTone}`}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wide text-walmart-gray-500">
+          <p className="text-xs font-semibold uppercase tracking-wide text-brand-gray-500">
             Marketplace Performance
           </p>
-          <p className="mt-1 text-sm text-walmart-gray-900">
-            Walmart standards updated {performance.standards_last_updated}
+          <p className="mt-1 text-sm text-brand-gray-900">
+            Marketplace standards updated {performance.standards_last_updated}
           </p>
         </div>
         <span className={`rounded-full px-2 py-1 text-[10px] font-semibold uppercase tracking-wide ${badgeTone}`}>
@@ -67,8 +67,8 @@ function SellerPerformanceCard({
 
       <div className="mt-3 flex flex-wrap gap-2">
         {performance.uses_wfs && (
-          <span className="rounded-full bg-walmart-blue-light px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-walmart-blue-dark">
-            WFS assisted
+          <span className="rounded-full bg-brand-blue-light px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-brand-blue-dark">
+            Platform fulfillment
           </span>
         )}
         {performance.pro_seller_eligible && (
@@ -85,7 +85,7 @@ function SellerPerformanceCard({
             className="rounded-md border border-white/70 bg-white/80 p-2"
           >
             <div className="flex items-center justify-between gap-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-walmart-gray-500">
+              <p className="text-xs font-semibold uppercase tracking-wide text-brand-gray-500">
                 {sellerMetricShortLabels[metric.code] ?? metric.label}
               </p>
               <span
@@ -98,29 +98,29 @@ function SellerPerformanceCard({
                 {metric.status === "meets_standard" ? "Meets" : "Misses"}
               </span>
             </div>
-            <p className="mt-1 text-sm font-semibold text-walmart-gray-900">
+            <p className="mt-1 text-sm font-semibold text-brand-gray-900">
               {formatRate(metric.actual)}
             </p>
-            <p className="text-xs text-walmart-gray-500">{formatThreshold(metric)}</p>
+            <p className="text-xs text-brand-gray-500">{formatThreshold(metric)}</p>
             {metric.wfs_assisted && (
-              <p className="mt-1 text-[11px] text-walmart-blue-dark">WFS helps cover this metric.</p>
+              <p className="mt-1 text-[11px] text-brand-blue-dark">Platform fulfillment helps cover this metric.</p>
             )}
           </div>
         ))}
       </div>
 
-      <p className="mt-3 text-xs text-walmart-gray-600">{performance.account_risk}</p>
+      <p className="mt-3 text-xs text-brand-gray-600">{performance.account_risk}</p>
 
       {signal && (
-        <div className="mt-3 rounded-md border border-walmart-gray-200 bg-white/80 p-2">
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-walmart-gray-500">
+        <div className="mt-3 rounded-md border border-brand-gray-200 bg-white/80 p-2">
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-brand-gray-500">
             Secondary internal signal
           </p>
-          <p className="mt-1 text-sm text-walmart-gray-900">
+          <p className="mt-1 text-sm text-brand-gray-900">
             Composite {signal.ipi_score} · {signal.ipi_tier}
           </p>
           {signal.wfs_recommendation && (
-            <p className="mt-1 text-xs text-walmart-gray-500">{signal.wfs_recommendation}</p>
+            <p className="mt-1 text-xs text-brand-gray-500">{signal.wfs_recommendation}</p>
           )}
         </div>
       )}
@@ -271,37 +271,37 @@ export function ProductDetail({ item }: { item: Item }) {
 
   return (
     <div className="flex flex-col gap-6 md:flex-row md:gap-8">
-      <div className="flex aspect-square w-full max-w-xs flex-shrink-0 self-center items-center justify-center rounded-xl bg-walmart-gray-50 text-7xl sm:max-w-sm md:h-64 md:w-64 md:max-w-none md:self-start md:text-8xl">
+      <div className="flex aspect-square w-full max-w-xs flex-shrink-0 self-center items-center justify-center rounded-xl bg-brand-gray-50 text-7xl sm:max-w-sm md:h-64 md:w-64 md:max-w-none md:self-start md:text-8xl">
         {item.display_metadata.emoji || "📦"}
       </div>
 
       <div className="min-w-0 flex-1 space-y-4">
         <div>
-          <p className="text-xs text-walmart-gray-500 font-mono">{item.sku}</p>
-          <h1 className="text-2xl font-bold text-walmart-gray-900">{item.name}</h1>
+          <p className="text-xs text-brand-gray-500 font-mono">{item.sku}</p>
+          <h1 className="text-2xl font-bold text-brand-gray-900">{item.name}</h1>
           <div className="mt-1 flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-walmart-blue-light px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-walmart-blue-dark">
+            <span className="rounded-full bg-brand-blue-light px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-brand-blue-dark">
               {market.display_name}
             </span>
-            <span className="rounded-full bg-walmart-gray-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-walmart-gray-700">
+            <span className="rounded-full bg-brand-gray-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-brand-gray-700">
               {market.country_label}
             </span>
           </div>
           {item.category_path && (
-            <p className="text-sm text-walmart-gray-500 mt-1">
+            <p className="text-sm text-brand-gray-500 mt-1">
               {item.category_path.split(".").join(" > ")}
             </p>
           )}
         </div>
 
         {item.display_metadata.price && (
-          <p className="text-3xl font-bold text-walmart-gray-900">
+          <p className="text-3xl font-bold text-brand-gray-900">
             ${item.display_metadata.price}
           </p>
         )}
 
         {item.display_metadata.description && (
-          <p className="text-sm text-walmart-gray-500">
+          <p className="text-sm text-brand-gray-500">
             {item.display_metadata.description}
           </p>
         )}
@@ -310,19 +310,19 @@ export function ProductDetail({ item }: { item: Item }) {
           {item.compliance_tags.map((tag) => (
             <span
               key={tag}
-              className="px-2 py-1 text-xs font-medium rounded-full bg-walmart-blue-light text-walmart-blue-dark"
+              className="px-2 py-1 text-xs font-medium rounded-full bg-brand-blue-light text-brand-blue-dark"
             >
               {tag}
             </span>
           ))}
         </div>
 
-        <div className="border-t border-walmart-gray-200 pt-4 space-y-3">
+        <div className="border-t border-brand-gray-200 pt-4 space-y-3">
           <SellerPicker itemId={item.item_id} value={sellerId} onChange={setSellerId} />
 
           {hasAgeRestriction && (
             <div>
-              <label className="block text-sm font-medium text-walmart-gray-700 mb-1">
+              <label className="block text-sm font-medium text-brand-gray-700 mb-1">
                 Customer Age
               </label>
               <input
@@ -332,7 +332,7 @@ export function ProductDetail({ item }: { item: Item }) {
                 value={age ?? ""}
                 onChange={(e) => setAge(e.target.value ? Number(e.target.value) : undefined)}
                 placeholder="Enter age for verification"
-                className="w-32 px-3 py-2 border border-walmart-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-walmart-blue"
+                className="w-32 px-3 py-2 border border-brand-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue"
               />
             </div>
           )}
@@ -345,26 +345,26 @@ export function ProductDetail({ item }: { item: Item }) {
         <button
           onClick={handleEvaluate}
           disabled={isEvaluating}
-          className="w-full py-3 px-6 bg-walmart-blue text-white font-bold rounded-full hover:bg-walmart-blue-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full py-3 px-6 bg-brand-blue text-white font-bold rounded-full hover:bg-brand-blue-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isEvaluating ? "Evaluating..." : "Check Eligibility"}
         </button>
 
         {response && response.item_id === item.item_id && (
-          <div className="space-y-3 border-t border-walmart-gray-200 pt-4">
+          <div className="space-y-3 border-t border-brand-gray-200 pt-4">
             <div className="flex items-center justify-between">
               <EligibilityBadge eligible={response.eligible} />
-              <span className="text-xs text-walmart-gray-500">
+              <span className="text-xs text-brand-gray-500">
                 {response.rules_loaded} rules loaded, {response.evaluation_ms}ms
               </span>
             </div>
 
             {response.market_summary && (
-              <div className="rounded-lg border border-walmart-gray-200 bg-walmart-gray-50 p-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-walmart-gray-500">
+              <div className="rounded-lg border border-brand-gray-200 bg-brand-gray-50 p-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-brand-gray-500">
                   Market Summary
                 </p>
-                <p className="mt-1 text-sm text-walmart-gray-900">
+                <p className="mt-1 text-sm text-brand-gray-900">
                   {response.market_summary.display_name} · {response.market_summary.currency_code}
                 </p>
               </div>
@@ -378,15 +378,15 @@ export function ProductDetail({ item }: { item: Item }) {
             )}
 
             {!response.seller_performance && response.seller_signal && (
-              <div className="rounded-lg border border-walmart-gray-200 bg-walmart-gray-50 p-3">
-                <p className="text-xs font-semibold uppercase tracking-wide text-walmart-gray-500">
+              <div className="rounded-lg border border-brand-gray-200 bg-brand-gray-50 p-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-brand-gray-500">
                   Secondary internal signal
                 </p>
-                <p className="mt-1 text-sm text-walmart-gray-900">
+                <p className="mt-1 text-sm text-brand-gray-900">
                   Composite {response.seller_signal.ipi_score} · {response.seller_signal.ipi_tier}
                 </p>
                 {response.seller_signal.wfs_recommendation && (
-                  <p className="mt-1 text-xs text-walmart-gray-500">
+                  <p className="mt-1 text-xs text-brand-gray-500">
                     {response.seller_signal.wfs_recommendation}
                   </p>
                 )}

@@ -365,7 +365,7 @@ export interface MarketCoverageStat {
   market_code: string;
   eligible_rate?: number;
   blocked_rate?: number;
-  transactability_rate?: number;
+  eligibility_rate?: number;
   low_confidence_rate?: number;
 }
 

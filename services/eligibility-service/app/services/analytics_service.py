@@ -103,7 +103,7 @@ async def market_coverage(db: AsyncSession, days: int) -> list[dict]:
                 "market_code": row.market_code,
                 "eligible_rate": round(eligible_count / evaluations, 4) if evaluations else 0.0,
                 "blocked_rate": round(blocked_count / evaluations, 4) if evaluations else 0.0,
-                "transactability_rate": round(eligible_count / evaluations, 4) if evaluations else 0.0,
+                "eligibility_rate": round(eligible_count / evaluations, 4) if evaluations else 0.0,
                 "low_confidence_rate": 0.0,
             }
         )

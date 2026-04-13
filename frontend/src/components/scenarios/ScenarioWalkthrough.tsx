@@ -26,19 +26,19 @@ export function ScenarioWalkthrough() {
   }, [autoplay, scenarios]);
 
   if (!scenario) {
-    return <div className="text-sm text-walmart-gray-500">Loading scenarios...</div>;
+    return <div className="text-sm text-brand-gray-500">Loading scenarios...</div>;
   }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm font-semibold text-walmart-gray-900">
+        <p className="text-sm font-semibold text-brand-gray-900">
           {scenario.id}. {scenario.short_label}
         </p>
         <button
           type="button"
           onClick={() => setAutoplay(!autoplay)}
-          className="rounded-full border border-walmart-gray-300 px-3 py-1 text-xs font-semibold text-walmart-gray-700"
+          className="rounded-full border border-brand-gray-300 px-3 py-1 text-xs font-semibold text-brand-gray-700"
         >
           {autoplay ? "Pause" : "Autoplay"}
         </button>
@@ -52,12 +52,12 @@ export function ScenarioWalkthrough() {
 
       <div className="grid gap-3 md:grid-cols-2">
         {scenario.variants.map((variant) => (
-          <div key={variant.label} className="rounded-lg border border-walmart-gray-200 bg-white p-4">
-            <p className="text-sm font-semibold text-walmart-gray-900">{variant.label}</p>
-            <p className="mt-1 text-xs text-walmart-gray-500">
+          <div key={variant.label} className="rounded-lg border border-brand-gray-200 bg-white p-4">
+            <p className="text-sm font-semibold text-brand-gray-900">{variant.label}</p>
+            <p className="mt-1 text-xs text-brand-gray-500">
               {variant.market_code} · {variant.item_sku}
             </p>
-            <p className="mt-2 text-sm text-walmart-gray-700">{variant.expected_outcome}</p>
+            <p className="mt-2 text-sm text-brand-gray-700">{variant.expected_outcome}</p>
           </div>
         ))}
       </div>
@@ -70,8 +70,8 @@ export function ScenarioWalkthrough() {
             onClick={() => setIndex(entryIndex)}
             className={`rounded-full px-3 py-1 text-xs font-semibold ${
               entryIndex === index
-                ? "bg-walmart-blue text-white"
-                : "border border-walmart-gray-300 text-walmart-gray-700"
+                ? "bg-brand-blue text-white"
+                : "border border-brand-gray-300 text-brand-gray-700"
             }`}
           >
             {entry.id}

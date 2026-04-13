@@ -113,10 +113,10 @@ def build_performance_snapshot(seller: Any) -> dict[str, Any]:
         "uses_wfs": bool(getattr(seller, "uses_wfs", False)),
         "standards_last_updated": STANDARDS_LAST_UPDATED,
         "account_risk": (
-            "In good standing with Walmart Marketplace standards."
+            "In good standing with Marketplace seller performance standards."
             if good_standing
-            else "One or more Walmart Marketplace standards miss policy thresholds and may trigger suppression, suspension, or termination."
+            else "One or more Marketplace seller performance standards miss policy thresholds and may trigger suppression, suspension, or termination."
         ),
         "metrics": metrics,
-        "source": "Walmart Marketplace Seller Performance Standards",
+        "source": "Marketplace Seller Performance Standards",
     }

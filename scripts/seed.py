@@ -1,4 +1,4 @@
-"""Seed script for the Walmart Transactability Engine.
+"""Seed script for the Marketplace Eligibility Engine.
 Run with: python -m scripts.seed
 Requires all services to be running (docker compose up).
 """
@@ -23,7 +23,7 @@ EFFECTIVE_FROM = "2020-01-01T00:00:00-07:00"
 # ---------------------------------------------------------------------------
 # Seller UUIDs (deterministic for reproducibility)
 # ---------------------------------------------------------------------------
-WALMART_SELLER_ID = "00000000-0000-0000-0000-000000000001"
+PLATFORM_SELLER_ID = "00000000-0000-0000-0000-000000000001"
 ACME_WINES_SELLER_ID = "00000000-0000-0000-0000-000000000002"
 TECHGEAR_SELLER_ID = "00000000-0000-0000-0000-000000000003"
 NEWSELLER_SELLER_ID = "00000000-0000-0000-0000-000000000004"
@@ -377,8 +377,8 @@ GEO_ZONES: list[dict[str, Any]] = [
 
 SELLERS: list[dict[str, Any]] = [
     {
-        "seller_id": WALMART_SELLER_ID,
-        "name": "Walmart",
+        "seller_id": PLATFORM_SELLER_ID,
+        "name": "MegaMart",
         "trust_tier": "top_rated",
         "defect_rate": 0.001,
         "return_rate": 0.024,
@@ -681,7 +681,7 @@ COMPLIANCE_RULES: list[dict[str, Any]] = [
         rule_type="product",
         compliance_tags=["firearm"],
         blocked_paths=["marketplace_3p"],
-        metadata={"policy": "Walmart marketplace policy", "jurisdiction": "corporate"},
+        metadata={"policy": "Marketplace seller quality standards", "jurisdiction": "corporate"},
     ),
     _rule(
         "firearms_age_verification_21",
@@ -716,7 +716,7 @@ COMPLIANCE_RULES: list[dict[str, Any]] = [
         "Firearm purchase — background check and ID required at pickup",
         rule_type="product",
         compliance_tags=["firearm"],
-        metadata={"policy": "Walmart firearms policy", "jurisdiction": "corporate"},
+        metadata={"policy": "Marketplace seller quality standards", "jurisdiction": "corporate"},
     ),
     # -----------------------------------------------------------------------
     # Scenario 6: Seller hazmat quality gate (ChemSupply defect > 3%)
@@ -744,7 +744,7 @@ COMPLIANCE_RULES: list[dict[str, Any]] = [
                 "seller_defect_rate": {"operator": "less_than", "value": 0.03},
             },
         },
-        metadata={"policy": "Walmart seller quality standards"},
+        metadata={"policy": "Marketplace seller quality standards"},
     ),
     # -----------------------------------------------------------------------
     # Scenario 7: 3P alcohol — age req + seller trust gate + advisory
@@ -791,7 +791,7 @@ COMPLIANCE_RULES: list[dict[str, Any]] = [
             "type": "trust_tier",
             "required_tiers": ["trusted", "top_rated"],
         },
-        metadata={"policy": "Walmart alcohol seller policy"},
+        metadata={"policy": "Marketplace seller quality standards"},
     ),
     _rule(
         "alcohol_responsibility_advisory",
@@ -831,7 +831,7 @@ COMPLIANCE_RULES: list[dict[str, Any]] = [
             "type": "trust_tier",
             "required_tiers": ["trusted", "top_rated"],
         },
-        metadata={"policy": "Walmart electronics seller standards"},
+        metadata={"policy": "Marketplace seller quality standards"},
     ),
     # -----------------------------------------------------------------------
     # Scenario 9: Pseudoephedrine — ID required + quantity limit
@@ -1057,7 +1057,7 @@ COMPLIANCE_RULES: list[dict[str, Any]] = [
                 "seller_defect_rate": {"operator": "less_than", "value": 0.05},
             },
         },
-        metadata={"policy": "Walmart seller performance standards"},
+        metadata={"policy": "Marketplace seller quality standards"},
     ),
     _rule(
         "heavy_item_ship_from_store",
@@ -1423,7 +1423,7 @@ async def seed_inventory(
                 "item_id": item_id,
                 "fulfillment_node": "FC-DAL-01",
                 "path_id": path_ids[path_code],
-                "seller_id": WALMART_SELLER_ID,
+                "seller_id": PLATFORM_SELLER_ID,
                 "available_qty": default_qty,
                 "reserved_qty": 0,
                 "node_enabled": True,
@@ -1490,7 +1490,7 @@ async def seed_inventory(
             "item_id": toy_id,
             "fulfillment_node": "STORE-DAL-B",
             "path_id": path_ids["pickup"],
-            "seller_id": WALMART_SELLER_ID,
+            "seller_id": PLATFORM_SELLER_ID,
             "available_qty": 7,
             "reserved_qty": 0,
             "node_enabled": True,
@@ -1503,7 +1503,7 @@ async def seed_inventory(
             "item_id": toy_id,
             "fulfillment_node": "STORE-DAL-C",
             "path_id": path_ids["pickup"],
-            "seller_id": WALMART_SELLER_ID,
+            "seller_id": PLATFORM_SELLER_ID,
             "available_qty": 8,
             "reserved_qty": 0,
             "node_enabled": False,
@@ -1813,7 +1813,7 @@ def print_test_commands(sku_to_id: dict[str, str]) -> None:
             f"-d '"
             f'{{"item_id":"{milk_id}","fulfillment_node":"FC-DAL-01",'
             f'"event_type":"adjustment","path_id":{pid},'
-            f'"seller_id":"{WALMART_SELLER_ID}","delta":-50}}'
+            f'"seller_id":"{PLATFORM_SELLER_ID}","delta":-50}}'
             f"' | python3 -m json.tool"
             f"  # {path_name}"
         )
@@ -1840,7 +1840,7 @@ def print_test_commands(sku_to_id: dict[str, str]) -> None:
 async def seed():
     async with httpx.AsyncClient(base_url=BASE_URL, timeout=30) as client:
         print("=" * 60)
-        print("  Walmart Transactability Engine — Full Demo Seed")
+        print("  Marketplace Eligibility Engine — Full Demo Seed")
         print("=" * 60)
         print(f"  Target: {BASE_URL}")
         print(f"  Items: {len(ITEMS)}")

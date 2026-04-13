@@ -27,7 +27,7 @@ from app.models.market_regulation import MarketRegulation
 from app.services.diagnosis_service import derive_primary_cause
 from app.services.geo_service import find_matching_zones
 from app.services.rule_cache_service import get_cached_rules, set_cached_rules
-from shared.constants import WALMART_SELLER_ID
+from shared.constants import PLATFORM_SELLER_ID
 
 PACIFIC = ZoneInfo("America/Los_Angeles")
 
@@ -164,7 +164,7 @@ async def evaluate(request_data: dict, db: AsyncSession) -> dict:
     debug_mode = bool(request_data.get("_debug"))
     primary_node = (request_data.get("context") or {}).get("primary_node_id")
     nearby_nodes = (request_data.get("context") or {}).get("nearby_nodes") or []
-    inv_seller_id = seller_id or WALMART_SELLER_ID
+    inv_seller_id = seller_id or PLATFORM_SELLER_ID
 
     inventory_error = None
     try:

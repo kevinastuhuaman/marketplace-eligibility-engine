@@ -14,7 +14,7 @@ from app.models.sellers import Seller
 from app.schemas.sellers import MetricsUpdate, OfferCreate, SellerCreate
 from app.services.ipi_service import compute_ipi, ipi_tier, rank_adjustment_pct
 from app.services.performance_service import build_performance_snapshot
-from shared.constants import WALMART_SELLER_ID
+from shared.constants import PLATFORM_SELLER_ID
 
 router = APIRouter()
 PACIFIC = ZoneInfo("America/Los_Angeles")
@@ -51,7 +51,7 @@ def _serialize_seller(seller: Seller) -> dict:
 @router.get("/v1/sellers")
 async def list_sellers(db: AsyncSession = Depends(get_db)):
     result = await db.execute(
-        select(Seller).where(Seller.seller_id != WALMART_SELLER_ID).order_by(Seller.name)
+        select(Seller).where(Seller.seller_id != PLATFORM_SELLER_ID).order_by(Seller.name)
     )
     return [_serialize_seller(seller) for seller in result.scalars().all()]
 
@@ -63,7 +63,7 @@ async def sellers_for_item(item_id: UUID, db: AsyncSession = Depends(get_db)):
             and_(
                 SellerOffer.item_id == item_id,
                 SellerOffer.active.is_(True),
-                SellerOffer.seller_id != WALMART_SELLER_ID,
+                SellerOffer.seller_id != PLATFORM_SELLER_ID,
             )
         )
     )

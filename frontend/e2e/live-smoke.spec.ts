@@ -47,7 +47,7 @@ async function runEligibilityCheck(page: Page, debug: boolean) {
   expect(response.ok()).toBeTruthy();
 }
 
-test.describe("Walmart frontend live smoke", () => {
+test.describe("Frontend live smoke", () => {
   test("loads the home page", async ({ page }) => {
     await openHome(page);
     await waitForCatalog(page);

@@ -30,7 +30,7 @@ export const useMarketStore = create<MarketState>()(
       },
     }),
     {
-      name: "walmart-market",
+      name: "market",
       partialize: (state) => ({ market: state.market }),
     },
   ),

@@ -22,7 +22,7 @@ const PATH_ICONS: Record<string, string> = {
 export function FulfillmentPaths({ paths }: { paths: PathResult[] }) {
   return (
     <div className="space-y-2">
-      <h3 className="text-sm font-semibold text-walmart-gray-700">Fulfillment Paths</h3>
+      <h3 className="text-sm font-semibold text-brand-gray-700">Fulfillment Paths</h3>
       <div className="grid grid-cols-2 gap-2">
         {paths.map((p) => (
           <div
@@ -48,18 +48,18 @@ export function FulfillmentPaths({ paths }: { paths: PathResult[] }) {
                 score={p.confidence_score}
               />
               {p.fallback_applied && (
-                <span className="text-[10px] font-semibold uppercase tracking-wide text-walmart-gray-500">
+                <span className="text-[10px] font-semibold uppercase tracking-wide text-brand-gray-500">
                   Fallback applied
                 </span>
               )}
             </div>
             {p.inventory_available != null && (
-              <p className="text-xs text-walmart-gray-500">
+              <p className="text-xs text-brand-gray-500">
                 Stock: {p.inventory_available}
               </p>
             )}
             {p.confidence_reason && (
-              <p className="text-xs text-walmart-gray-500 mt-1">{p.confidence_reason}</p>
+              <p className="text-xs text-brand-gray-500 mt-1">{p.confidence_reason}</p>
             )}
             {p.violations.length > 0 && (
               <p className="text-xs text-red-700 mt-1 line-clamp-2">
@@ -77,7 +77,7 @@ export function FulfillmentPaths({ paths }: { paths: PathResult[] }) {
               </p>
             )}
             {p.fallback_reason && (
-              <p className="mt-1 text-xs text-walmart-gray-500">{p.fallback_reason}</p>
+              <p className="mt-1 text-xs text-brand-gray-500">{p.fallback_reason}</p>
             )}
             <AlternativeNodeList nodes={p.alternative_nodes} />
             <RestrictionZoneMap path={p} />

@@ -31,7 +31,7 @@ export const useUiStore = create<UiState>()(
       setWalkthroughAutoplay: (walkthroughAutoplay) => set({ walkthroughAutoplay }),
     }),
     {
-      name: "walmart-ui",
+      name: "ui",
       partialize: (state) => ({
         theme: state.theme,
         diagnosisLocale: state.diagnosisLocale,

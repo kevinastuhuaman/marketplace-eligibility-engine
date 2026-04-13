@@ -56,8 +56,8 @@ export function ComparePage() {
 
   return (
     <div className="max-w-screen-xl mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold text-walmart-gray-900">Market Comparison</h1>
-      <p className="mt-2 text-sm text-walmart-gray-500">
+      <h1 className="text-2xl font-bold text-brand-gray-900">Market Comparison</h1>
+      <p className="mt-2 text-sm text-brand-gray-500">
         {item ? `${item.name} across selected markets` : "Loading item..."}
       </p>
       <div className="mt-6 grid gap-4 lg:grid-cols-3">
@@ -65,34 +65,34 @@ export function ComparePage() {
           const result = results[marketCode];
           const market = markets.find((entry) => entry.code === marketCode);
           return (
-            <div key={marketCode} className="rounded-xl border border-walmart-gray-200 bg-white p-4 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-wide text-walmart-gray-500">
+            <div key={marketCode} className="rounded-xl border border-brand-gray-200 bg-white p-4 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-wide text-brand-gray-500">
                 {marketCode}
               </p>
-              <p className="mt-1 text-sm font-semibold text-walmart-gray-900">
+              <p className="mt-1 text-sm font-semibold text-brand-gray-900">
                 {market?.display_name ?? marketCode}
               </p>
               {result ? (
                 <div className="mt-3 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-walmart-gray-600">
+                    <span className="text-sm text-brand-gray-600">
                       {result.eligible ? "Eligible" : "Blocked"}
                     </span>
                     <StatusBadge status={result.paths[0]?.status ?? "blocked"} />
                   </div>
                   {result.warnings.slice(0, 2).map((warning) => (
-                    <p key={warning.rule_name} className="text-xs text-walmart-gray-500">
+                    <p key={warning.rule_name} className="text-xs text-brand-gray-500">
                       {warning.reason}
                     </p>
                   ))}
                   {result.paths.slice(0, 2).map((path) => (
-                    <p key={path.path_code} className="text-xs text-walmart-gray-700">
+                    <p key={path.path_code} className="text-xs text-brand-gray-700">
                       {path.path_code}: {path.status}
                     </p>
                   ))}
                 </div>
               ) : (
-                <p className="mt-3 text-sm text-walmart-gray-500">Evaluating...</p>
+                <p className="mt-3 text-sm text-brand-gray-500">Evaluating...</p>
               )}
             </div>
           );

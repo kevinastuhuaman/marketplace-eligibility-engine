@@ -12,7 +12,7 @@ import httpx
 BASE_URL = os.environ.get("TEST_BASE_URL", "http://localhost")
 TIMEOUT = 15.0
 
-WALMART_SELLER_ID = "00000000-0000-0000-0000-000000000001"
+PLATFORM_SELLER_ID = "00000000-0000-0000-0000-000000000001"
 ACME_WINES_SELLER_ID = "00000000-0000-0000-0000-000000000002"
 TECHGEAR_SELLER_ID = "00000000-0000-0000-0000-000000000003"
 NEWSELLER_SELLER_ID = "00000000-0000-0000-0000-000000000004"
@@ -200,13 +200,13 @@ def test_seller_performance_endpoint(client):
 # ---------------------------------------------------------------------------
 
 
-def test_sellers_list_excludes_walmart(client):
-    """GET /v1/sellers excludes WALMART_SELLER_ID and includes expected 3P sellers."""
+def test_sellers_list_excludes_platform_seller(client):
+    """GET /v1/sellers excludes PLATFORM_SELLER_ID and includes expected 3P sellers."""
     r = client.get("/v1/sellers")
     assert r.status_code == 200
     data = r.json()
     seller_ids = {str(s["seller_id"]) for s in data}
-    assert WALMART_SELLER_ID not in seller_ids
+    assert PLATFORM_SELLER_ID not in seller_ids
     assert ACME_WINES_SELLER_ID in seller_ids
     assert TECHGEAR_SELLER_ID in seller_ids
     assert NEWSELLER_SELLER_ID in seller_ids

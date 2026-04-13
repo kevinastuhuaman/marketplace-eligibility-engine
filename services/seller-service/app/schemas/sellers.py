@@ -4,7 +4,7 @@ from decimal import Decimal
 
 
 class SellerCreate(BaseModel):
-    seller_id: UUID | None = None  # Allow explicit UUID for seeding (Walmart)
+    seller_id: UUID | None = None  # Allow explicit UUID for seeding (platform 1P seller)
     name: str
     trust_tier: str = "new"
     defect_rate: Decimal = Decimal("0")
