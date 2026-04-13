@@ -4,7 +4,7 @@ Four pages:
   1. Evaluation Tester  -- evaluate items against compliance rules
   2. System Overview    -- counts, rule breakdown, recent audit
   3. Live Event Stream  -- Redis Streams viewer (auto-refresh)
-  4. Scenario Demo      -- one-click execution of all 10 seed scenarios
+  4. Scenario Demo      -- one-click execution of the scenario catalog
 """
 
 from __future__ import annotations
@@ -26,7 +26,20 @@ API_BASE = os.environ.get("API_GATEWAY_URL", "http://nginx:80")
 REDIS_URL = os.environ.get("REDIS_URL", "redis://redis:6379")
 HTTP_TIMEOUT = 10.0
 
-MARKETS = ["US-CA", "US-TX", "US-CO", "US-UT", "US-MA", "US-NY", "US-HI", "US-KY"]
+MARKETS = [
+    "US-CA",
+    "US-TX",
+    "US-CO",
+    "US-UT",
+    "US-MA",
+    "US-NY",
+    "US-HI",
+    "US-KY",
+    "MX-CDMX",
+    "CL-RM",
+    "CR-SJ",
+    "CA-ON",
+]
 
 STATE_FROM_MARKET = {
     "US-CA": "CA",
@@ -37,6 +50,10 @@ STATE_FROM_MARKET = {
     "US-NY": "NY",
     "US-HI": "HI",
     "US-KY": "KY",
+    "MX-CDMX": "CDMX",
+    "CL-RM": "RM",
+    "CR-SJ": "SJ",
+    "CA-ON": "ON",
 }
 
 ZIP_FROM_MARKET = {
@@ -48,6 +65,10 @@ ZIP_FROM_MARKET = {
     "US-NY": "10001",
     "US-HI": "96801",
     "US-KY": "40202",
+    "MX-CDMX": "01000",
+    "CL-RM": "8320000",
+    "CR-SJ": "10101",
+    "CA-ON": "M5H",
 }
 
 # Known sellers from seed data (since there is no GET /v1/sellers list endpoint)
@@ -154,6 +175,7 @@ def path_status_color(status: str) -> str:
         "conditional": "#eab308",
         "gated": "#f97316",
         "blocked": "#ef4444",
+        "low_confidence": "#f59e0b",
     }
     return colors.get(status, "#6b7280")
 

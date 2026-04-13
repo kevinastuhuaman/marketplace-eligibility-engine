@@ -6,6 +6,7 @@ from decimal import Decimal
 class RuleCreate(BaseModel):
     rule_name: str
     rule_type: str
+    regulation_type: str = "GENERAL"
     action: str = "BLOCK"
     priority: int = 100
     conflict_group: str | None = None
@@ -34,3 +35,31 @@ class MarketFulfillmentCreate(BaseModel):
     path_id: int
     enabled: bool = True
     priority: int = 0
+
+
+class MarketRegulationCreate(BaseModel):
+    market_code: str
+    display_name: str
+    country_code: str
+    region_code: str
+    currency_code: str = "USD"
+    language_codes: list[str] | None = None
+    default_timezone: str = "America/Los_Angeles"
+    regulatory_summary: dict | None = None
+    active: bool = True
+
+
+class GeoRestrictionZoneCreate(BaseModel):
+    zone_code: str
+    market_code: str
+    zone_name: str
+    zone_type: str
+    geometry_type: str = "polygon"
+    center_latitude: float | None = None
+    center_longitude: float | None = None
+    radius_meters: int | None = None
+    polygon_coordinates: list | None = None
+    hex_cells: list[str] | None = None
+    blocked_paths: list[str] | None = None
+    metadata: dict | None = None
+    active: bool = True

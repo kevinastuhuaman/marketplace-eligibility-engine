@@ -149,17 +149,50 @@ def test_evaluate_rules_loaded_count(client, items):
 
 
 def test_demo_scenarios(client):
-    """GET /v1/demo/scenarios returns 10 scenarios with variants."""
+    """GET /v1/demo/scenarios returns the expanded scenario catalog."""
     r = client.get("/v1/demo/scenarios")
     assert r.status_code == 200
     data = r.json()
-    assert len(data) == 10
+    assert len(data) >= 24
     for s in data:
         assert "id" in s
         assert "label" in s
         assert "short_label" in s
         assert "variants" in s
         assert len(s["variants"]) >= 1
+
+
+def test_markets_endpoint_includes_international_markets(client):
+    r = client.get("/v1/markets")
+    assert r.status_code == 200
+    market_codes = {market["market_code"] for market in r.json()}
+    assert {"MX-CDMX", "CL-RM", "CR-SJ", "CA-ON"}.issubset(market_codes)
+
+
+def test_seller_ipi_endpoint(client):
+    r = client.get(f"/v1/sellers/{TECHGEAR_SELLER_ID}/ipi")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["ipi_score"] >= 0
+    assert "tier" in data
+
+
+def test_seller_performance_endpoint(client):
+    r = client.get(f"/v1/sellers/{TECHGEAR_SELLER_ID}/performance")
+    assert r.status_code == 200
+    data = r.json()
+    assert data["overall_status"] in {"good_standing", "action_required"}
+    assert data["standards_last_updated"] == "2026-03-25"
+    metric_codes = {metric["code"] for metric in data["metrics"]}
+    assert {
+        "cancellation_rate",
+        "on_time_delivery_rate",
+        "valid_tracking_rate",
+        "seller_response_rate",
+        "return_rate",
+        "item_not_received_rate",
+        "negative_feedback_rate",
+    }.issubset(metric_codes)
 
 
 # ---------------------------------------------------------------------------
@@ -178,6 +211,12 @@ def test_sellers_list_excludes_walmart(client):
     assert TECHGEAR_SELLER_ID in seller_ids
     assert NEWSELLER_SELLER_ID in seller_ids
     assert CHEMSUPPLY_SELLER_ID in seller_ids
+    seller_map = {str(s["seller_id"]): s for s in data}
+    assert seller_map[TECHGEAR_SELLER_ID]["performance_status"] in {
+        "good_standing",
+        "action_required",
+    }
+    assert "uses_wfs" in seller_map[TECHGEAR_SELLER_ID]
 
 
 def test_sellers_for_item_returns_only_offerers(client, items):

@@ -12,6 +12,7 @@ class ComplianceRule(Base):
     rule_id = Column(Integer, primary_key=True, autoincrement=True)
     rule_name = Column(String(100), nullable=False)
     rule_type = Column(String(30), nullable=False)  # geographic, temporal, category, seller, item, quantity
+    regulation_type = Column(String(32), nullable=False, default="GENERAL")
     action = Column(String(10), nullable=False, default="BLOCK")  # BLOCK, WARN, REQUIRE, GATE
     priority = Column(Integer, default=100)
     conflict_group = Column(String(50), nullable=True)

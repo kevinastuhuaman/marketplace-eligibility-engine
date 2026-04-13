@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Competitive Inventory Landscape</title>
+    <style>
+      :root {
+        --blue: #0071ce;
+        --blue-deep: #0a3c77;
+        --yellow: #ffc220;
+        --ink: #18212b;
+        --muted: #59636e;
+        --surface: #ffffff;
+        --surface-soft: #f5f8fb;
+        --border: #d7e0ea;
+        --success: #1f7a4b;
+        --warning: #b36a00;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(255, 194, 32, 0.22), transparent 28%),
+          linear-gradient(180deg, #eef6ff 0%, #ffffff 44%);
+      }
+
+      a {
+        color: var(--blue-deep);
+      }
+
+      .page {
+        width: min(1160px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 28px 0 64px;
+      }
+
+      .hero {
+        display: grid;
+        gap: 18px;
+        padding: 32px;
+        border-radius: 28px;
+        border: 1px solid rgba(0, 113, 206, 0.14);
+        background:
+          linear-gradient(135deg, rgba(0, 113, 206, 0.98), rgba(10, 60, 119, 0.96)),
+          linear-gradient(135deg, rgba(255, 194, 32, 0.16), transparent);
+        color: white;
+        box-shadow: 0 22px 70px rgba(0, 55, 110, 0.16);
+      }
+
+      .eyebrow {
+        width: fit-content;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.14);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.1rem, 4vw, 4rem);
+        line-height: 0.96;
+        max-width: 13ch;
+      }
+
+      .hero p {
+        margin: 0;
+        max-width: 72ch;
+        color: rgba(255, 255, 255, 0.92);
+        line-height: 1.6;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .hero-stat {
+        padding: 16px 18px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .hero-stat strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 1.55rem;
+      }
+
+      .section {
+        margin-top: 28px;
+        padding: 28px;
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        box-shadow: 0 14px 48px rgba(25, 46, 74, 0.05);
+      }
+
+      .section h2 {
+        margin: 0 0 8px;
+        font-size: 1.45rem;
+      }
+
+      .section > p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .grid-3 {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .card,
+      .player {
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: var(--surface-soft);
+      }
+
+      .card h3,
+      .player h3 {
+        margin: 0 0 10px;
+        font-size: 1rem;
+      }
+
+      .player-grid {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .label {
+        display: inline-block;
+        margin-bottom: 10px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(0, 113, 206, 0.08);
+        color: var(--blue-deep);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .player p,
+      .card p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      ul {
+        margin: 10px 0 0;
+        padding-left: 18px;
+      }
+
+      li {
+        margin: 9px 0;
+        line-height: 1.5;
+      }
+
+      .steps {
+        margin-top: 18px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .step {
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, #ffffff, #f9fbfd);
+      }
+
+      .step strong {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--blue-deep);
+      }
+
+      .step p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .callout {
+        margin-top: 18px;
+        padding: 18px;
+        border-radius: 20px;
+        border: 1px solid rgba(179, 106, 0, 0.2);
+        background: rgba(255, 194, 32, 0.14);
+      }
+
+      .callout strong {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--warning);
+      }
+
+      .sources {
+        margin-top: 18px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .source {
+        padding: 14px 16px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: #fff;
+      }
+
+      .source strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .footer {
+        margin-top: 28px;
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+
+      @media (max-width: 900px) {
+        .hero-grid,
+        .grid-3,
+        .player-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <div class="eyebrow">Competitive Research</div>
+        <h1>No one has perfect real-time inventory.</h1>
+        <p>
+          The better operators do not wait for a flawless system of record. They layer
+          together live stock-out events, predicted availability, substitute logic,
+          nearby-node rescue, and in-store guidance so customers still get a reliable
+          experience even when upstream systems are imperfect.
+        </p>
+        <div class="hero-grid">
+          <div class="hero-stat">
+            <strong>Instacart</strong>
+            Combines retailer feeds, shopper signals, shelf scans, and prediction
+          </div>
+          <div class="hero-stat">
+            <strong>Target + Home Depot</strong>
+            Treat store guidance as part of the shopping product, not a side feature
+          </div>
+          <div class="hero-stat">
+            <strong>DoorDash + Amazon</strong>
+            Build customer trust with fast stock updates and controlled substitutions
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Executive Takeaway</h2>
+        <p>
+          The best benchmark is not “who has perfectly accurate inventory everywhere?”
+          The better benchmark is “who handles uncertainty well?” The strongest setups
+          are honest about stale signals, recover demand when the first item is missing,
+          and route the customer toward the next best outcome.
+        </p>
+        <div class="grid-3">
+          <div class="card">
+            <h3>What leaders do</h3>
+            <ul>
+              <li>Use multiple signals instead of relying on one legacy feed.</li>
+              <li>Push temporary stock changes in real time, not only in scheduled batches.</li>
+              <li>Offer substitutes, alternative stores, or alternate fulfillment paths before the order dies.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>What they avoid</h3>
+            <ul>
+              <li>Pretending every in-stock flag is equally trustworthy.</li>
+              <li>Forcing customers to discover missing items only at checkout or by message from a shopper.</li>
+              <li>Waiting for a complete platform rewrite before improving reliability.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>What this means for Walmart</h3>
+            <ul>
+              <li>The opportunity is a confidence layer, not a fantasy of instant perfection.</li>
+              <li>Reliability can improve meaningfully even with fragmented systems.</li>
+              <li>The smartest next move is layered modernization across supply chain, e-commerce, and stores.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>What Competitors Are Actually Doing</h2>
+        <p>
+          Below is the clearest pattern I found from current public materials. These are
+          not guesses about internal architecture; they are the visible operating moves
+          companies talk about publicly.
+        </p>
+        <div class="player-grid">
+          <article class="player">
+            <div class="label">Instacart</div>
+            <h3>Hybrid inventory intelligence</h3>
+            <p>
+              Instacart is the cleanest example of a retailer-enablement company treating
+              inventory as a living estimate. Publicly, it says it combines retailer
+              integrations, order outcomes, shopper-collected data, and AI shelf scans to
+              improve real-time understanding of what is actually on shelves.
+            </p>
+            <ul>
+              <li>Good lesson: do not trust one upstream feed.</li>
+              <li>Good lesson: use operational data from order picking as inventory signal.</li>
+              <li>Good lesson: use prediction to answer “likely back tomorrow morning?” not just “in stock right now?”</li>
+            </ul>
+          </article>
+
+          <article class="player">
+            <div class="label">DoorDash</div>
+            <h3>Real-time stock-out events</h3>
+            <p>
+              DoorDash explicitly pushes merchants toward real-time out-of-stock updates.
+              Its developer docs say scheduled refreshes are not enough and provide item
+              status webhooks so unavailable items disappear immediately instead of hours
+              later.
+            </p>
+            <ul>
+              <li>Good lesson: temporary stock changes need their own fast event path.</li>
+              <li>Good lesson: batch menu refreshes are too slow for live commerce.</li>
+              <li>Good lesson: customer substitution preferences should travel with the order.</li>
+            </ul>
+          </article>
+
+          <article class="player">
+            <div class="label">Amazon / Whole Foods</div>
+            <h3>Trust through guardrails</h3>
+            <p>
+              Amazon and Whole Foods lean heavily on customer trust controls: explicit
+              substitution choices, accept-or-decline flows, pickup and delivery options,
+              and freshness guarantees for perishables.
+            </p>
+            <ul>
+              <li>Good lesson: let the customer decide where substitution is acceptable.</li>
+              <li>Good lesson: make “we will make it right” part of the promise.</li>
+              <li>Good lesson: reliability is operational and UX, not only systems architecture.</li>
+            </ul>
+          </article>
+
+          <article class="player">
+            <div class="label">Target</div>
+            <h3>Search, intent, and store-mode recovery</h3>
+            <p>
+              Target talks publicly about improving search and recommendations using
+              availability in real time, while Store Mode helps shoppers navigate aisles
+              and switch to alternate fulfillment if something is missing.
+            </p>
+            <ul>
+              <li>Good lesson: recovery starts in search, not only after an out-of-stock event.</li>
+              <li>Good lesson: store wayfinding reduces the “I know it’s somewhere here” frustration.</li>
+              <li>Good lesson: connect inventory, search, and fulfillment in one experience.</li>
+            </ul>
+          </article>
+
+          <article class="player">
+            <div class="label">Home Depot</div>
+            <h3>Exact store guidance</h3>
+            <p>
+              Home Depot is a strong adjacent benchmark. Its app shows local inventory and
+              guides customers to the exact aisle and bay. That is the clearest public
+              example of treating “find the item inside the store” as part of digital
+              commerce, while still being honest that inventory levels cannot be guaranteed.
+            </p>
+            <ul>
+              <li>Good lesson: if you know likely location, expose it directly.</li>
+              <li>Good lesson: local stock counts are more useful when paired with navigation.</li>
+              <li>Good lesson: physical store complexity can be abstracted by the app without promising impossible precision.</li>
+            </ul>
+          </article>
+
+          <article class="player">
+            <div class="label">Ocado / Kroger / Coles</div>
+            <h3>Automation and dedicated fulfillment</h3>
+            <p>
+              Ocado’s platform is the heavy-infrastructure approach: end-to-end ecommerce,
+              supply chain, fulfillment, and last mile. Partners like Coles emphasize
+              better availability, fewer substitutions, and improved freshness from
+              automated fulfillment centers and in-store fulfillment software.
+            </p>
+            <ul>
+              <li>Good lesson: dedicated fulfillment can improve order quality materially.</li>
+              <li>Good lesson: this is powerful but expensive and slower to scale.</li>
+              <li>Good lesson: this is not the only path; it is the capital-intensive path.</li>
+            </ul>
+          </article>
+
+          <article class="player">
+            <div class="label">IKEA / Tesco</div>
+            <h3>Honest fallbacks and pricing trust</h3>
+            <p>
+              IKEA publicly tells customers that stock information may not update
+              instantly, while Tesco price-matches substitutions so customers do not feel
+              punished when the original item is unavailable.
+            </p>
+            <ul>
+              <li>Good lesson: explicit honesty can increase trust, not reduce it.</li>
+              <li>Good lesson: substitution pricing needs guardrails.</li>
+              <li>Good lesson: when data is imperfect, the trust model matters as much as the algorithm.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>The Common Pattern Across Winners</h2>
+        <p>
+          The best systems are not single-source systems. They are layered systems.
+        </p>
+        <div class="steps">
+          <div class="step">
+            <strong>1. Real-time eventing for temporary stock-outs</strong>
+            <p>
+              Leaders create a fast lane for “this item just went out of stock” rather
+              than waiting for a full catalog or inventory refresh.
+            </p>
+          </div>
+          <div class="step">
+            <strong>2. Confidence, not fake certainty</strong>
+            <p>
+              They implicitly or explicitly score how trustworthy a stock signal is based
+              on freshness, historical volatility, recent picks, or shelf observations.
+            </p>
+          </div>
+          <div class="step">
+            <strong>3. Recovery before failure</strong>
+            <p>
+              They surface substitutes, alternate stores, pickup, later delivery, or a
+              similar item set before the customer abandons the mission.
+            </p>
+          </div>
+          <div class="step">
+            <strong>4. Store guidance as a product feature</strong>
+            <p>
+              The strongest in-store apps help people find the item physically, not just
+              decide whether to buy it digitally.
+            </p>
+          </div>
+          <div class="step">
+            <strong>5. Modernization around the edges</strong>
+            <p>
+              Most public examples suggest layering better decisioning and better signals
+              on top of imperfect systems, not replacing everything at once.
+            </p>
+          </div>
+        </div>
+
+        <div class="callout">
+          <strong>Most important insight</strong>
+          The market signal is clear: the better way is not “wait until all inventory is
+          truly real time.” The better way is “treat inventory as uncertain, update it
+          from many signals, and design the customer experience to recover gracefully.”
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Best-Practice Moves Walmart Could Borrow</h2>
+        <p>
+          If the goal is pragmatic improvement without a full overhaul, these are the
+          highest-leverage moves.
+        </p>
+        <div class="steps">
+          <div class="step">
+            <strong>Near-term</strong>
+            <p>
+              Add a confidence layer to inventory, expose “high confidence” versus “may be
+              stale,” support explicit substitution preferences, and rescue orders with
+              nearby-store alternatives.
+            </p>
+          </div>
+          <div class="step">
+            <strong>Mid-term</strong>
+            <p>
+              Capture more live stock signals from associates, pickers, and shelf scans;
+              improve search so unavailable items roll naturally into strong substitutes or
+              adjacent intent.
+            </p>
+          </div>
+          <div class="step">
+            <strong>Longer-term</strong>
+            <p>
+              Build a shared inventory-confidence service across supply chain, e-commerce,
+              and store teams so the organization stops debating whose number is “right”
+              and starts acting on a unified confidence model.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Sources</h2>
+        <p>
+          These are the main public sources behind the summary above. I prioritized
+          official company docs, help pages, and partner announcements.
+        </p>
+        <div class="sources">
+          <div class="source">
+            <strong>Instacart</strong>
+            <a href="https://www.instacart.com/company/updates/introducing-store-view-and-second-store-check/">Store View and Second Store Check</a> and
+            <a href="https://www.instacart.com/company/tech-innovation/how-instacarts-item-availability-evolved-over-the-pandemic">How Item Availability Evolved</a>
+          </div>
+          <div class="source">
+            <strong>DoorDash</strong>
+            <a href="https://developer.doordash.com/es-US/docs/marketplace/how_to/item_status/">Item 86ing</a> and
+            <a href="https://developer.doordash.com/docs/marketplace/retail/orders/features/substitution_preference/">Substitution Preferences</a>
+          </div>
+          <div class="source">
+            <strong>Amazon / Whole Foods</strong>
+            <a href="https://www.wholefoodsmarket.com/customer-service/topics">Whole Foods grocery delivery and substitution FAQ</a> and
+            <a href="https://www.aboutamazon.com/news/retail/amazon-same-day-fresh-grocery-delivery-united-states">Amazon grocery delivery and Freshness Guarantee</a>
+          </div>
+          <div class="source">
+            <strong>Target</strong>
+            <a href="https://corporate.target.com/news-features/article/2025/10/technology-powering-growth">Tech at Target: Powering Possibility</a>
+          </div>
+          <div class="source">
+            <strong>Home Depot</strong>
+            <a href="https://www.homedepot.com/c/ai/find-everything-you-need-inside-the-home-depot-store/9ba683603be9fa5395fab901c3a65572">Product Locator and local inventory</a>
+          </div>
+          <div class="source">
+            <strong>Ocado / Kroger / Coles</strong>
+            <a href="https://www.ocadogroup.com/our-solutions/online-grocery">Ocado Smart Platform</a>,
+            <a href="https://www.ocadogroup.com/newsroom/news/kroger-rolls-out-new-technology-enhancements-with-ocado-group">Kroger technology rollout</a>, and
+            <a href="https://www.ocadogroup.com/our-business/osp-partners/coles">Coles partnership page</a>
+          </div>
+          <div class="source">
+            <strong>IKEA / Tesco</strong>
+            <a href="https://www.ikea.com/kr/en/customer-service/mobile-apps/">IKEA Shoppable app</a> and
+            <a href="https://www.tesco.com/help/pages/online-grocery-faqs/collecting-your-order-and-delivery-issues/i-ve-received-something-i-didn-t-order?keyword=I+do+not+do+click+and+collect+and+I+notice+my+request+for&origin=search">Tesco substitution pricing FAQ</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="footer">
+        Bottom line: the strongest competitor pattern is not a perfect single inventory
+        source. It is a reliability system made of eventing, confidence scoring,
+        substitution controls, alternate-node rescue, and better in-store navigation.
+      </section>
+    </main>
+  </body>
+</html>

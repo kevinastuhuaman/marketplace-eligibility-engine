@@ -1,21 +1,28 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import clsx from "clsx";
 import { fetchScenarios } from "../../api/scenarios";
 import { fetchItems } from "../../api/items";
 import { evaluateEligibility } from "../../api/evaluate";
+import { buildScenarioRequest } from "../../lib/scenarios";
 import { useMarketStore } from "../../store/market-store";
 import { useEvaluationStore } from "../../store/evaluation-store";
-import { MARKETS } from "../../data/markets";
 import type { ScenarioVariant } from "../../types/api";
 
 export function ScenarioStrip() {
   const [activeScenario, setActiveScenario] = useState<number | null>(null);
   const [activeVariant, setActiveVariant] = useState<number>(0);
   const navigate = useNavigate();
-  const setMarket = useMarketStore((s) => s.setMarket);
-  const { setResponse, setIsEvaluating, testerMode, setScenarioContext } = useEvaluationStore();
+  const { markets, setMarketByCode } = useMarketStore();
+  const {
+    setResponse,
+    setRequest,
+    setDiagnosis,
+    setIsEvaluating,
+    testerMode,
+    setScenarioContext,
+  } = useEvaluationStore();
   const queryClient = useQueryClient();
 
   const { data: scenarios } = useQuery({
@@ -34,32 +41,31 @@ export function ScenarioStrip() {
       const item = items?.find((i) => i.sku === variant.item_sku);
       if (!item) return;
 
-      // Set market
-      const market = MARKETS.find((m) => m.code === variant.market_code);
-      if (market) setMarket(market);
+      const market = markets.find((entry) => entry.code === variant.market_code);
+      if (!market) return;
+      setMarketByCode(variant.market_code);
 
-      // Sync controls so ProductDetail reflects the scenario inputs
       setScenarioContext({
         sellerId: variant.seller_id ?? null,
         age: variant.context?.customer_age,
         quantity: variant.context?.requested_quantity,
+        location: variant.customer_location ?? {
+          state: variant.state,
+          zip: variant.zip,
+          county: variant.county,
+        },
+        locale: variant.locale,
+        primaryNodeId: variant.primary_node_id ?? null,
+        nearbyNodes: variant.nearby_nodes,
+        narration: variant.narration,
       });
 
-      // Navigate to product
       navigate(`/product/${item.item_id}`);
 
-      // Evaluate
-      const result = await evaluateEligibility(
-        {
-          item_id: item.item_id,
-          market_code: variant.market_code,
-          customer_location: { state: variant.state, zip: variant.zip },
-          seller_id: variant.seller_id ?? null,
-          timestamp: variant.timestamp ?? new Date().toISOString(),
-          context: variant.context,
-        },
-        testerMode,
-      );
+      const request = buildScenarioRequest(item.item_id, variant, market);
+      setRequest(request);
+      setDiagnosis(null);
+      const result = await evaluateEligibility(request, testerMode);
       setResponse(result);
     } finally {
       setIsEvaluating(false);
@@ -95,6 +101,12 @@ export function ScenarioStrip() {
               {s.id}. {s.short_label}
             </button>
           ))}
+          <Link
+            to="/scenarios/walkthrough"
+            className="ml-2 rounded-full border border-walmart-gray-200 bg-white px-3 py-1 text-xs font-medium text-walmart-gray-700"
+          >
+            Walkthrough
+          </Link>
         </div>
 
         {active && active.variants.length > 1 && (

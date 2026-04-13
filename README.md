@@ -3,7 +3,7 @@
 A distributed system that answers the hardest question in e-commerce at Walmart scale:
 **"Can this customer buy this item, right now, through this fulfillment method?"**
 
-4 microservices | Event-driven | 4 action types | Real conflict resolution | 57 tests passing
+4 microservices | Event-driven | 4 action types | 24 UI scenarios | 12 markets
 
 ---
 
@@ -80,22 +80,33 @@ Expected: `"eligible": false` with violation `utah_alcohol_prohibition` on all 4
 
 The key insight: binary eligible/not-eligible is insufficient. REQUIRE lets the system say "yes, if you verify age" without blocking the entire flow. GATE separates seller capability from product compliance.
 
-## 10 Demo Scenarios
+## 2026 Expansion
 
-These are the talking points. Each one demonstrates a different dimension of the engine.
+This branch adds the interview-focused expansion layer on top of the original engine:
 
-| # | Scenario | What It Proves | Expected Outcome |
-|---|----------|----------------|------------------|
-| 1 | **Wine to Utah vs Colorado** | Geographic compliance | UT: BLOCKED all paths. CO: eligible with age verification |
-| 2 | **Pool Chlorine Paths** | Path-level differentiation | Shipping BLOCKED (hazmat), pickup CLEAR |
-| 3 | **Fireworks: TX July / TX October / MA** | Temporal + geographic layering | Jul TX: eligible. Oct TX: GATED (out of season). MA: BLOCKED (state ban) |
-| 4 | **Supplement in California** | Advisory warnings without blocking | Eligible with Prop 65 WARNING attached |
-| 5 | **Rifle: 1P with Age / No Age / Underage** | REQUIRE escalation to BLOCK | Age 25: clear. No age: conditional. Age 17: BLOCKED |
-| 6 | **Hazmat Seller Quality Gate** | Seller metric thresholds | ChemSupply (4.5% defect rate) GATED from marketplace |
-| 7 | **3P Alcohol: Trusted vs New Seller** | Seller trust tiers | Acme Wines (trusted): passes. NewSeller123 (new): GATED |
-| 8 | **Electronics: Trusted vs New Seller** | Category-specific seller gates | TechGear Pro (trusted): passes. NewSeller123: GATED |
-| 9 | **Pseudoephedrine Quantity Limit** | Quantity-based compliance (CMEA) | qty=2: eligible. qty=5: BLOCKED |
-| 10 | **Inventory Depletion** | Real-time stock check | Available (qty=50): eligible. After depletion: BLOCKED |
+- `POST /v1/diagnose` for deterministic root-cause analysis with localized explanations.
+- `GET /v1/markets` for API-driven market metadata and supported-path discovery.
+- Global market coverage for `MX-CDMX`, `CL-RM`, `CR-SJ`, and `CA-ON`.
+- Geo restriction zones, probabilistic inventory confidence, nearby-store pooling, seller IPI, analytics, circuit-breaker introspection, and batch evaluation.
+
+## Scenario Catalog
+
+The original 10 scenarios are preserved, and the catalog is expanded to 24 interactive UI scenarios plus a CLI perf story. Highlights from the new set:
+
+- 11. Cross-System Diagnosis Cascade
+- 12. Offer Exists, Inventory Missing
+- 13. School-Zone Alcohol Delivery
+- 14. Mexico NOM Certification
+- 15. Mexico IEPS + Spanish Label
+- 16. Chile Black Label + Lithium Import
+- 17. Costa Rica RTCA + VAT Registration
+- 18. Canada Bilingual + Metric Units
+- 19. FC Clear, Store Low Confidence
+- 20. Inventory Service Outage Fallback
+- 21. Seller IPI Split
+- 22. Nearby Store Rescue
+- 23. Impact Dashboard Story
+- 24. Side-by-Side Market Compare
 
 ## Conflict Resolution
 
@@ -165,7 +176,7 @@ Example: In Massachusetts, the `ma_fireworks_total_ban` (BLOCK, geographic) and 
 
 ## Test Suite
 
-57 tests total, two layers:
+The repo now includes unit coverage for geo restriction helpers, probabilistic inventory confidence, seller IPI, and the expanded evaluator operators, plus integration coverage for diagnosis, global markets, and batch evaluation.
 
 - **29 unit tests** (`tests/test_evaluator.py`) -- Pure function tests of the rule engine. No database, no Docker, no network. Tests condition evaluation, conflict resolution, REQUIRE escalation, and path status determination.
 - **28 integration tests** (`tests/test_scenarios.py`) -- All 10 scenarios end-to-end through Nginx, hitting all 4 services with seeded data. Validates the full orchestration path from API gateway to response.
@@ -185,6 +196,19 @@ pytest tests/test_scenarios.py -v
 - **Redis-backed eligibility cache** -- Cache evaluation results keyed by (item, market, path) with TTL-based invalidation from inventory events.
 - **Event-driven re-evaluation** -- Inventory depletion triggers automatic re-evaluation and pushes updated eligibility to the storefront.
 - **Rule versioning and rollback** -- Temporal rule history with point-in-time evaluation for audit and compliance.
+
+## Interview Talking Points
+
+- Agentic Diagnosis: “I built a diagnosis endpoint on top of the evaluation engine, not beside it. It traces exactly which rule, service, and data field caused the block, then turns that into a human explanation and a concrete fix, so a merchandiser sees ‘missing NOM certification in Mexico’ instead of ‘item unavailable.’”
+- Global Markets: “I parameterized market differences as data, not branching code. Adding Mexico, Chile, Costa Rica, and Canada became a matter of loading market regulations and rule metadata into the same engine, which is exactly the ‘few levers, infinite use cases’ pattern your team talks about.”
+- Hex-Grid Geofencing: “The old model blocks an entire ZIP if one school sits inside it. I implemented address-level restriction zones with polygon and hex metadata, so the same alcohol rule can protect sensitive areas without denying thousands of households that are actually eligible.”
+- Probabilistic Availability: “I moved inventory from binary to confidence-weighted. That lets the system say ‘available, but stale and low confidence’ instead of overpromising inventory that hasn’t been verified recently, which is much closer to real same-day commerce.”
+- Circuit Breakers: “I added service-level circuit breakers with risk-tiered fallback logic. When an upstream service fails, low-risk items can still move with warnings, medium-risk items gate to review, and high-risk items fail closed, so the platform degrades intentionally instead of randomly.”
+- Seller IPI: “I extended seller trust from a couple of metrics to an IPI-style operational score. That score feeds eligibility, ranking metadata, and WFS recommendations, so seller quality becomes a reusable platform primitive instead of a one-off rule.”
+- Multi-Store Pooling: “I added nearby-store pooling so availability doesn’t stop at one node. If the primary store is out, the engine can surface the next-best store with distance and inventory, which turns an OOS into a save without adding any new inventory.”
+- Audit Analytics: “I normalized the audit trail into impact analytics. Now the system can answer which rules block the most revenue, which markets have the lowest transactability rate, and where reversals suggest the logic is too broad.”
+- Enhanced Frontend: “I made the demo feel like an internal Walmart decision tool instead of a portfolio mockup. The UI now explains diagnosis, compares markets side by side, walks through scenarios as a narrative, and prints cleanly for an interview handout.”
+- Performance: “I treated performance as part of the product, not an afterthought. With rule caching, connection-pool tuning, and batch evaluation, I can show measured p50/p95/p99 latency and talk about scale with actual numbers instead of theory.”
 
 ## Built With
 

@@ -16,6 +16,11 @@ class SellerResponse(BaseModel):
     defect_rate: Decimal
     return_rate: Decimal
     on_time_rate: Decimal
+    valid_tracking_rate: Decimal | None = None
+    seller_response_rate: Decimal | None = None
+    item_not_received_rate: Decimal | None = None
+    negative_feedback_rate: Decimal | None = None
+    uses_wfs: bool = False
     total_orders: int
     created_at: datetime
 

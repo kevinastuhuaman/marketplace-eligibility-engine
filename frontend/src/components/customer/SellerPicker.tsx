@@ -28,7 +28,14 @@ export function SellerPicker({
         <option value="">Walmart (1P)</option>
         {sellers?.map((s) => (
           <option key={s.seller_id} value={s.seller_id}>
-            {s.name} ({s.trust_tier})
+            {s.name} ({s.trust_tier}
+            {s.performance_status
+              ? ` · ${
+                  s.performance_status === "good_standing" ? "meets Walmart standards" : "action required"
+                }`
+              : ""}
+            {s.uses_wfs ? " · WFS" : ""}
+            {typeof s.ipi_score === "number" ? ` · internal ${s.ipi_score}` : ""})
           </option>
         ))}
       </select>

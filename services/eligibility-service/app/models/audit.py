@@ -1,5 +1,5 @@
-from sqlalchemy import Column, String, Integer, Boolean
-from sqlalchemy.dialects.postgresql import UUID, JSONB, TIMESTAMP
+from sqlalchemy import Column, String, Integer, Boolean, Text
+from sqlalchemy.dialects.postgresql import UUID, JSONB, TIMESTAMP, ARRAY
 from sqlalchemy.sql import func
 from app.db import Base
 
@@ -18,4 +18,10 @@ class EligibilityAuditLog(Base):
     rules_evaluated = Column(Integer, nullable=False)
     rules_suppressed = Column(Integer, default=0)
     evaluation_ms = Column(Integer, nullable=False)
+    blocking_rule_names = Column(ARRAY(Text), default=list)
+    gating_rule_names = Column(ARRAY(Text), default=list)
+    warning_rule_names = Column(ARRAY(Text), default=list)
+    path_statuses = Column(JSONB, default=dict)
+    diagnosis_source_service = Column(String(64), nullable=True)
+    diagnosis_root_cause_code = Column(String(128), nullable=True)
     evaluated_at = Column(TIMESTAMP(timezone=True), server_default=func.now())

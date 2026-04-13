@@ -33,7 +33,7 @@ async def _run_consumer(consumer: StreamConsumer, name: str):
 async def lifespan(app: FastAPI):
     # Create tables on startup (with retry for DB readiness)
     from app.db import engine, Base
-    from app.models import compliance, fulfillment, audit  # noqa: F401
+    from app.models import audit, compliance, fulfillment, geo_restriction_zone, market_regulation  # noqa: F401
     for attempt in range(1, 4):
         try:
             async with engine.begin() as conn:

@@ -8,10 +8,13 @@ ACTION_RANK = {"BLOCK": 4, "GATE": 3, "REQUIRE": 2, "WARN": 1}
 SCOPE_SCORE = {
     "item": 50,
     "seller": 40,
+    "regulation": 35,
     "category": 30,
     "geographic": 20,
+    "geo_zone": 20,
     "temporal": 10,
     "quantity": 15,
+    "availability": 12,
 }
 
 
@@ -47,7 +50,7 @@ def evaluate_condition(condition: dict, variables: dict) -> bool:
     value = condition.get("value")
 
     var_value = variables.get(name)
-    if var_value is None:
+    if var_value is None and operator not in {"outside_zone"}:
         return False  # Variable not available, condition doesn't match
 
     if operator == "equal_to":
@@ -97,6 +100,22 @@ def evaluate_condition(condition: dict, variables: dict) -> bool:
             return value[0] <= float(var_value) <= value[1]
         except (ValueError, TypeError, IndexError):
             return False
+    elif operator == "within_zone":
+        if isinstance(var_value, list):
+            if isinstance(value, list):
+                return any(zone in var_value for zone in value)
+            return value in var_value
+        if isinstance(var_value, bool):
+            return bool(var_value)
+        return False
+    elif operator == "outside_zone":
+        if isinstance(var_value, list):
+            if isinstance(value, list):
+                return all(zone not in var_value for zone in value)
+            return value not in var_value
+        if isinstance(var_value, bool):
+            return not var_value
+        return True
     return False
 
 

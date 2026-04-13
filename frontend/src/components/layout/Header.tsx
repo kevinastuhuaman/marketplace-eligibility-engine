@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { LocationSelector } from "../customer/LocationSelector";
 import { useEvaluationStore } from "../../store/evaluation-store";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function Header() {
   const { testerMode, toggleTesterMode } = useEvaluationStore();
@@ -22,7 +23,17 @@ export function Header() {
         </Link>
 
         <div className="flex items-center gap-4">
+          <Link to="/scenarios/walkthrough" className="text-xs font-semibold text-blue-100">
+            Walkthrough
+          </Link>
+
+          <a href="/research-hub.html" className="text-xs font-semibold text-blue-100">
+            Research Hub
+          </a>
+
           <LocationSelector />
+
+          <ThemeToggle />
 
           <div className="flex items-center gap-2 ml-4">
             <span className="text-xs text-blue-200">Customer</span>

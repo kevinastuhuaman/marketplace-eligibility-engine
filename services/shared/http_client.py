@@ -6,6 +6,7 @@ import httpx
 from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception
 
 TIMEOUT = httpx.Timeout(connect=2.0, read=5.0, write=5.0, pool=5.0)
+LIMITS = httpx.Limits(max_keepalive_connections=20, max_connections=100)
 
 
 def _is_retryable(exc: BaseException) -> bool:
@@ -18,7 +19,7 @@ def _is_retryable(exc: BaseException) -> bool:
 
 
 def create_client(base_url: str) -> httpx.AsyncClient:
-    return httpx.AsyncClient(base_url=base_url, timeout=TIMEOUT)
+    return httpx.AsyncClient(base_url=base_url, timeout=TIMEOUT, limits=LIMITS)
 
 
 @retry(stop=stop_after_attempt(2), wait=wait_exponential(multiplier=0.5, min=0.5, max=2), retry=retry_if_exception(_is_retryable))

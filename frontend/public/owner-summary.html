@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>What We Have Built So Far</title>
+    <style>
+      :root {
+        --blue: #0071ce;
+        --blue-deep: #004f9a;
+        --yellow: #ffc220;
+        --ink: #18212b;
+        --muted: #59636e;
+        --surface: #ffffff;
+        --surface-soft: #f5f8fb;
+        --border: #d7e0ea;
+        --success: #1f7a4b;
+        --warning: #b36a00;
+        --danger: #b42318;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top left, rgba(255, 194, 32, 0.25), transparent 28%),
+          linear-gradient(180deg, #eef6ff 0%, #ffffff 42%);
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .page {
+        width: min(1120px, calc(100vw - 32px));
+        margin: 0 auto;
+        padding: 28px 0 64px;
+      }
+
+      .hero {
+        display: grid;
+        gap: 18px;
+        padding: 32px;
+        border: 1px solid rgba(0, 113, 206, 0.12);
+        border-radius: 28px;
+        background:
+          linear-gradient(135deg, rgba(0, 113, 206, 0.98), rgba(0, 79, 154, 0.96)),
+          linear-gradient(135deg, rgba(255, 194, 32, 0.18), transparent);
+        color: white;
+        box-shadow: 0 22px 70px rgba(0, 55, 110, 0.16);
+      }
+
+      .eyebrow {
+        width: fit-content;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.14);
+        color: rgba(255, 255, 255, 0.92);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.1rem, 4vw, 4rem);
+        line-height: 0.95;
+        max-width: 12ch;
+      }
+
+      .hero p {
+        margin: 0;
+        max-width: 68ch;
+        color: rgba(255, 255, 255, 0.92);
+        font-size: 1.05rem;
+        line-height: 1.6;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .hero-stat {
+        padding: 16px 18px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .hero-stat strong {
+        display: block;
+        font-size: 1.65rem;
+        margin-bottom: 4px;
+      }
+
+      .section {
+        margin-top: 28px;
+        padding: 28px;
+        border-radius: 24px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        box-shadow: 0 14px 48px rgba(25, 46, 74, 0.05);
+      }
+
+      .section h2 {
+        margin: 0 0 8px;
+        font-size: 1.45rem;
+      }
+
+      .section > p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+
+      .comparison {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .panel {
+        padding: 18px;
+        border-radius: 20px;
+        background: var(--surface-soft);
+        border: 1px solid var(--border);
+      }
+
+      .panel.before {
+        background: linear-gradient(180deg, #fff7f5, #ffffff);
+      }
+
+      .panel.after {
+        background: linear-gradient(180deg, #f1fbf5, #ffffff);
+      }
+
+      .panel h3 {
+        margin: 0 0 12px;
+        font-size: 1rem;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--ink);
+      }
+
+      li {
+        margin: 10px 0;
+        line-height: 1.5;
+      }
+
+      .grid-3 {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .card {
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: var(--surface-soft);
+      }
+
+      .card h3 {
+        margin: 0 0 10px;
+        font-size: 1rem;
+      }
+
+      .stack {
+        margin-top: 18px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .feature {
+        display: grid;
+        grid-template-columns: 170px 1fr;
+        gap: 16px;
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, #ffffff, #f9fbfd);
+      }
+
+      .feature strong {
+        font-size: 0.92rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--blue-deep);
+      }
+
+      .feature p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .status-grid {
+        margin-top: 18px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .status {
+        padding: 18px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: var(--surface-soft);
+      }
+
+      .status.ok {
+        border-color: rgba(31, 122, 75, 0.18);
+        background: rgba(31, 122, 75, 0.06);
+      }
+
+      .status.partial {
+        border-color: rgba(179, 106, 0, 0.2);
+        background: rgba(255, 194, 32, 0.12);
+      }
+
+      .status.risk {
+        border-color: rgba(180, 35, 24, 0.16);
+        background: rgba(180, 35, 24, 0.06);
+      }
+
+      .status span {
+        display: inline-block;
+        margin-bottom: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .status.ok span {
+        color: var(--success);
+      }
+
+      .status.partial span {
+        color: var(--warning);
+      }
+
+      .status.risk span {
+        color: var(--danger);
+      }
+
+      .footer {
+        margin-top: 28px;
+        padding: 18px 0 0;
+        color: var(--muted);
+        font-size: 0.95rem;
+        line-height: 1.6;
+      }
+
+      .cta {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .cta a {
+        text-decoration: none;
+        padding: 12px 16px;
+        border-radius: 999px;
+        font-weight: 700;
+      }
+
+      .cta .primary {
+        background: var(--yellow);
+        color: #1d1d1d;
+      }
+
+      .cta .secondary {
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        color: white;
+      }
+
+      @media (max-width: 860px) {
+        .hero-grid,
+        .comparison,
+        .grid-3,
+        .status-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .feature {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <div class="eyebrow">Owner Summary</div>
+        <h1>We turned a rule demo into a decision tool.</h1>
+        <p>
+          This project started as a useful transactability engine. It now behaves more
+          like an internal operating surface: it explains why something is blocked,
+          compares markets, shows confidence instead of pretending certainty, and helps
+          both customers and operators understand what to do next.
+        </p>
+        <div class="hero-grid">
+          <div class="hero-stat">
+            <strong>24</strong>
+            Interactive scenarios that tell a fuller business story
+          </div>
+          <div class="hero-stat">
+            <strong>12</strong>
+            Markets, including Mexico, Chile, Costa Rica, and Canada
+          </div>
+          <div class="hero-stat">
+            <strong>1</strong>
+            Shared engine that now supports customer, tester, and owner views
+          </div>
+        </div>
+        <div class="cta">
+          <a class="primary" href="/">Open the product experience</a>
+          <a class="secondary" href="/scenarios/walkthrough">Open walkthrough mode</a>
+          <a class="secondary" href="/competitor-landscape.html">Open competitor landscape</a>
+          <a class="secondary" href="/seller-landscape.html">Open seller landscape</a>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Before vs After</h2>
+        <p>
+          The biggest change is not just “more rules.” It is a shift from pass/fail
+          outputs toward understandable, actionable outcomes.
+        </p>
+        <div class="comparison">
+          <div class="panel before">
+            <h3>Before</h3>
+            <ul>
+              <li>A result could say “blocked,” but not clearly explain the true root cause.</li>
+              <li>Markets mostly looked US-centric, with limited variation beyond state rules.</li>
+              <li>Inventory was treated too simply: available or unavailable.</li>
+              <li>One empty node usually looked like a dead end, even when nearby supply existed.</li>
+              <li>The demo proved the engine worked, but not yet how an owner would use it to make decisions.</li>
+            </ul>
+          </div>
+          <div class="panel after">
+            <h3>After</h3>
+            <ul>
+              <li>Blocked and gated results can now explain the cause in plain language and suggest a fix.</li>
+              <li>The system can tell a richer story across countries, regulations, and seller readiness.</li>
+              <li>Inventory now carries confidence, freshness, and fallback behavior instead of false certainty.</li>
+              <li>Nearby-store rescue, geofencing, and seller-health signals now change the outcome in visible ways.</li>
+              <li>The product is closer to an internal Walmart-style decision console than a portfolio prototype.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>What This Means In Natural Terms</h2>
+        <p>
+          If you are a shopper, the experience becomes clearer. If you are an operator,
+          it becomes diagnosable. If you are the owner, it becomes explainable and easier
+          to pitch.
+        </p>
+        <div class="grid-3">
+          <div class="card">
+            <h3>For a customer</h3>
+            <ul>
+              <li>You can see whether a product is available, but also whether that availability is trustworthy.</li>
+              <li>If something is blocked, the system can explain why instead of feeling arbitrary.</li>
+              <li>If one store is empty, the experience can still surface another nearby option.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>For operations</h3>
+            <ul>
+              <li>You can separate a real compliance block from a seller-quality issue or inventory issue.</li>
+              <li>You can understand which rules are over-blocking and where revenue is at risk.</li>
+              <li>You can compare markets and see how the same item behaves under different regulatory setups.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>For you as owner</h3>
+            <ul>
+              <li>You now have a narrative: not just “we evaluate eligibility,” but “we make complex commerce understandable.”</li>
+              <li>The demo has clearer before/after proof points for interviews and stakeholder conversations.</li>
+              <li>The product is easier to position as a platform, not just a collection of rules.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>What The Call Clarified</h2>
+        <p>
+          This is not only a rules problem. It is also a reliability problem: inventory is
+          not perfectly real-time, systems are fragmented across countries and platforms,
+          and teams are being asked to modernize without ripping out everything at once.
+        </p>
+        <div class="grid-3">
+          <div class="card">
+            <h3>Inventory reality</h3>
+            <ul>
+              <li>Stock does not update instantly everywhere, so teams naturally become more conservative.</li>
+              <li>That caution protects against bad promises, but it can also hide real assortment from customers.</li>
+              <li>The opportunity is not fake certainty. It is more honest confidence, better recovery logic, and cleaner signals.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Customer reality</h3>
+            <ul>
+              <li>Today, customers often feel the gap through substitutions, shopper messages, or unexpected out-of-stocks.</li>
+              <li>A better experience is: reliable availability, exact in-store guidance, and strong alternatives when the first choice is missing.</li>
+              <li>If someone searches for coffee and it is unavailable, the system should still recover the intent with tea, matcha, or similar substitutes.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Org reality</h3>
+            <ul>
+              <li>The problem spans global supply chain, e-commerce, and in-store product teams.</li>
+              <li>The company is trying to unify fragmented systems while legacy platforms still shape what is possible.</li>
+              <li>That makes a layered improvement strategy more realistic than a one-shot platform rewrite.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>What We Built, In Plain English</h2>
+        <p>
+          Each piece below maps to something a real team would care about, but described
+          the way a business owner or PM would naturally talk about it.
+        </p>
+        <div class="stack">
+          <div class="feature">
+            <strong>Diagnosis</strong>
+            <p>
+              Instead of only saying “no,” the system can now explain what really caused
+              the block and what would need to change to make it go through.
+            </p>
+          </div>
+          <div class="feature">
+            <strong>Global readiness</strong>
+            <p>
+              We moved from mostly US-only logic to a structure that can show how the same
+              item behaves differently in Mexico, Chile, Costa Rica, and Canada.
+            </p>
+          </div>
+          <div class="feature">
+            <strong>Address precision</strong>
+            <p>
+              We no longer have to over-block entire ZIP codes when the real issue is only
+              a sensitive zone around a school or similar location.
+            </p>
+          </div>
+          <div class="feature">
+            <strong>Confidence-based inventory</strong>
+            <p>
+              “In stock” is no longer treated as equally reliable everywhere. The system can
+              tell you when stock is stale, volatile, or less trustworthy, which is a more
+              honest answer when upstream systems are not perfectly real-time.
+            </p>
+          </div>
+          <div class="feature">
+            <strong>Seller health</strong>
+            <p>
+              Seller quality now matters in a more operational way. Weak sellers can be
+              gated or blocked before they degrade the customer experience.
+            </p>
+          </div>
+          <div class="feature">
+            <strong>Save opportunities</strong>
+            <p>
+              When one store is empty, the engine can now look nearby and save the
+              transaction instead of treating the request as dead.
+            </p>
+          </div>
+          <div class="feature">
+            <strong>Substitute recovery</strong>
+            <p>
+              If the exact item is not available, the experience can steer the customer
+              toward strong alternatives instead of ending with a disappointing dead end.
+            </p>
+          </div>
+          <div class="feature">
+            <strong>Store guidance</strong>
+            <p>
+              The natural next step is not only saying whether an item exists, but guiding
+              the customer or associate toward the most likely place to find it in the store.
+            </p>
+          </div>
+          <div class="feature">
+            <strong>Legacy-friendly modernization</strong>
+            <p>
+              This approach improves confidence, diagnosis, and visibility without assuming
+              Walmart can replace every legacy system or observability tool overnight.
+            </p>
+          </div>
+          <div class="feature">
+            <strong>Business visibility</strong>
+            <p>
+              Audit data can now be rolled up into questions like “what is blocking the
+              most revenue?” and “which market is underperforming?”
+            </p>
+          </div>
+          <div class="feature">
+            <strong>Owner-facing UX</strong>
+            <p>
+              The frontend now has comparison, walkthrough, print, diagnosis, and clearer
+              result panels so the product communicates the story, not just the output.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Technical Before vs Technical After</h2>
+        <p>
+          If you want the engineering translation without going deep into code, this is the
+          cleanest summary.
+        </p>
+        <div class="comparison">
+          <div class="panel before">
+            <h3>Earlier technical state</h3>
+            <ul>
+              <li>Single evaluation endpoint as the main story.</li>
+              <li>US-heavy market assumptions.</li>
+              <li>Binary inventory interpretation.</li>
+              <li>Limited operator-facing explanation of rule outcomes.</li>
+              <li>Little acknowledgement of delayed or fragmented stock signals across systems.</li>
+              <li>Scenario catalog focused on the original core demo.</li>
+            </ul>
+          </div>
+          <div class="panel after">
+            <h3>Current technical state</h3>
+            <ul>
+              <li>Additive endpoints for diagnosis, markets, analytics, breaker status, seller IPI, and batch evaluation.</li>
+              <li>Market metadata, geo zones, confidence scoring, alternative nodes, and seller-health signals integrated into the same flow.</li>
+              <li>The system now models uncertainty explicitly instead of pretending every stock signal is equally fresh.</li>
+              <li>The product is better positioned as a coordination layer across supply chain, e-commerce, and store operations.</li>
+              <li>Expanded seed catalog and scenario data for 24 interview-ready demos.</li>
+              <li>Frontend support for diagnosis, compare, walkthrough, print, and richer debug/operator visibility.</li>
+              <li>Schema evolution started through real Alembic revisions instead of only table auto-creation.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Current Validation Status</h2>
+        <p>
+          This is the honest answer on testing right now. We validated some layers well,
+          but not every feature end-to-end yet.
+        </p>
+        <div class="status-grid">
+          <div class="status ok">
+            <span>Verified</span>
+            <div>Frontend production build completed successfully after `npm ci`.</div>
+          </div>
+          <div class="status ok">
+            <span>Verified</span>
+            <div>Python compile checks passed across services, scripts, dashboard, and tests.</div>
+          </div>
+          <div class="status partial">
+            <span>Partially Verified</span>
+            <div>Compose config validated for local development. Production compose still needs `POSTGRES_PASSWORD` set to fully validate.</div>
+          </div>
+          <div class="status risk">
+            <span>Not Fully Tested</span>
+            <div>Full Python test execution was not run on this machine because the host Python environment does not have `pytest` installed.</div>
+          </div>
+          <div class="status risk">
+            <span>Not Fully Tested</span>
+            <div>We did not run the full Docker seed + integration + Playwright suite against the complete expanded feature set in this session.</div>
+          </div>
+          <div class="status partial">
+            <span>Ready Next</span>
+            <div>The next solid pass is: boot the stack, reseed, run the expanded pytest set, then run Playwright and a manual owner walkthrough.</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="footer">
+        In short: we have moved from a convincing eligibility engine to a more complete
+        transactability product. The core shape is there. The story is much stronger.
+        What remains is the full containerized test pass to prove every new path end-to-end.
+      </section>
+    </main>
+  </body>
+</html>

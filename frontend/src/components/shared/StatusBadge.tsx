@@ -5,6 +5,7 @@ const STATUS_STYLES: Record<string, string> = {
   conditional: "bg-yellow-100 text-yellow-800 border-yellow-300",
   gated: "bg-orange-100 text-orange-800 border-orange-300",
   blocked: "bg-red-100 text-red-800 border-red-300",
+  low_confidence: "bg-amber-100 text-amber-900 border-amber-300",
 };
 
 export function StatusBadge({ status }: { status: string }) {

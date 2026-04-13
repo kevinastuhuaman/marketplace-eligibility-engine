@@ -373,6 +373,58 @@ Resolution steps:
 
 5. **Event-driven re-evaluation** — Inventory drops to 0 at FC-Dallas → item instantly becomes non-transactable for ship-to-home in TX → still available for pickup at Store #4532. Real-time, not batch.
 
+## Expansion Additions
+
+### Market Metadata
+
+The eligibility service now separates market enablement from market regulation metadata:
+
+- `market_fulfillment` continues to control which paths are enabled in a market.
+- `market_regulations` holds the market display name, country, region, language set, currency, timezone, and regulatory summary.
+- `customer_location.state` is treated as a generic region code and validated against `market_regulations.region_code`, which removes the earlier US-only assumption.
+
+### Geo Restriction Zones
+
+`geo_restriction_zones` adds address-level overlays for cases where ZIP-level blocking is too broad:
+
+- polygon or radius geometry stored directly in JSONB
+- optional `hex_cells` for coarse precomputed matching
+- `blocked_paths` so the same zone can block delivery but leave other paths untouched
+- surfaced through `matched_zone_codes` and `zone_explanation` in the evaluation response
+
+### Seller IPI and Market Readiness
+
+Seller quality is now represented as an additive operational signal instead of only trust tier:
+
+- `in_stock_rate`, `cancellation_rate`, `ipi_score`, and `ipi_breakdown` are persisted on sellers
+- `/v1/sellers/{seller_id}/ipi` exposes the score, tier, and ranking impact
+- eligibility rules can gate or block on `seller_ipi_score`
+- seller VAT readiness is also exposed as data so market-specific seller registration rules remain declarative
+
+### Probabilistic Inventory and Pooling
+
+Inventory is no longer purely binary:
+
+- `inventory_positions` now carry `confidence_score`, `last_verified_at`, `verification_source`, `oos_30d_count`, and `node_type`
+- path summaries surface `confidence_band` and `confidence_reason`
+- alternative fulfillment nodes can be returned for nearby-store rescue flows
+
+### Diagnosis, Analytics, and Resilience
+
+Three new additive layers sit on top of the original `/v1/evaluate` flow:
+
+- `/v1/diagnose` turns evaluation outputs plus trace metadata into deterministic root-cause findings
+- analytics endpoints aggregate the audit log into blocked-item, rule-impact, and market-coverage views
+- Redis-backed rule caching and circuit-breaker state let the system degrade by item risk tier instead of failing uniformly
+
+### Batch Evaluation
+
+`POST /v1/evaluate/batch` provides measured batch benchmarking over the same core engine:
+
+- same request model as single evaluation, wrapped in `requests[]`
+- ordered results with aggregate `p50_ms`, `p95_ms`, and `p99_ms`
+- compatible with the same rule cache and audit instrumentation
+
 ---
 
 ## Sources
