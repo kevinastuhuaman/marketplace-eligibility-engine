@@ -134,6 +134,9 @@ async def check_offer(seller_id: UUID, item_id: UUID) -> dict:
             }
         record_failure("seller-service", str(e))
         raise
+    except (httpx.ConnectError, httpx.TimeoutException, Exception) as e:
+        record_failure("seller-service", str(e))
+        raise
 
 
 async def get_ipi(seller_id: UUID) -> dict | None:

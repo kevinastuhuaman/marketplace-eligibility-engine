@@ -122,7 +122,22 @@ async def evaluate(request_data: dict, db: AsyncSession) -> dict:
         except Exception:
             seller_data = None  # Continue evaluation without seller enrichment
         if seller_data is None:
-            seller_data = {"seller_id": str(seller_id), "trust_tier": "new"}  # Minimal fallback
+            seller_data = {
+                "seller_id": str(seller_id),
+                "trust_tier": "new",
+                "defect_rate": "0.10",
+                "return_rate": "0.05",
+                "on_time_rate": "0.80",
+                "total_orders": 0,
+                "in_stock_rate": "0.90",
+                "cancellation_rate": "0.05",
+                "valid_tracking_rate": "0.90",
+                "seller_response_rate": "0.80",
+                "item_not_received_rate": "0.05",
+                "negative_feedback_rate": "0.05",
+                "uses_wfs": False,
+                "vat_registered": False,
+            }  # Conservative defaults so rule variables don't KeyError
 
         try:
             ipi_data = await seller_client.get_ipi(seller_id)
