@@ -134,7 +134,9 @@ async def check_offer(seller_id: UUID, item_id: UUID) -> dict:
             }
         record_failure("seller-service", str(e))
         raise
-    except (httpx.ConnectError, httpx.TimeoutException, Exception) as e:
+    except CircuitBreakerOpenError:
+        raise
+    except Exception as e:
         record_failure("seller-service", str(e))
         raise
 
@@ -160,6 +162,8 @@ async def get_ipi(seller_id: UUID) -> dict | None:
         if e.response.status_code == 404:
             return None
         record_failure("seller-service", str(e))
+        raise
+    except CircuitBreakerOpenError:
         raise
     except Exception as e:
         record_failure("seller-service", str(e))
@@ -187,6 +191,8 @@ async def get_performance(seller_id: UUID) -> dict | None:
         if e.response.status_code == 404:
             return None
         record_failure("seller-service", str(e))
+        raise
+    except CircuitBreakerOpenError:
         raise
     except Exception as e:
         record_failure("seller-service", str(e))

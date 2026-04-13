@@ -1,10 +1,5 @@
 import { apiFetch } from "./client";
-import type {
-  BatchEvaluateRequest,
-  BatchEvaluateResponse,
-  EligibilityResponse,
-  EvaluateRequest,
-} from "../types/api";
+import type { EligibilityResponse, EvaluateRequest } from "../types/api";
 
 export function evaluateEligibility(
   request: EvaluateRequest,
@@ -17,13 +12,4 @@ export function evaluateEligibility(
       body: JSON.stringify(request),
     },
   );
-}
-
-export function batchEvaluateEligibility(
-  request: BatchEvaluateRequest,
-): Promise<BatchEvaluateResponse> {
-  return apiFetch<BatchEvaluateResponse>("/v1/evaluate/batch", {
-    method: "POST",
-    body: JSON.stringify(request),
-  });
 }

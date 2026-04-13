@@ -298,7 +298,7 @@ async def evaluate(request_data: dict, db: AsyncSession) -> dict:
         fallback_applied = False
         fallback_reason = None
 
-        if (inventory_error or inventory_row.get("service_unavailable")) and path.requires_inventory and status != "blocked":
+        if (inventory_error or inventory_row.get("service_unavailable")) and path.requires_inventory and status not in ("blocked", "gated", "conditional"):
             status, eligible = _risk_tier_status(risk_tier)
             fallback_applied = True
             fallback_reason = f"Inventory fallback for {risk_tier}-risk item"
