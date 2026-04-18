@@ -4,7 +4,7 @@ Short repo-tracked handoff for the Walmart / Marketplace Eligibility Engine work
 
 ## Status Snapshot
 
-As of Apr 17, 2026 PST:
+As of Apr 17, 2026 PT:
 
 - Workspace was synced to `origin/main` before archive.
 - Production URL: `https://walmart.kevinastuhuaman.com`
