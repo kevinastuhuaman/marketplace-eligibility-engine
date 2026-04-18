@@ -10,6 +10,8 @@ A distributed compliance and eligibility engine for multi-market e-commerce.
 
 4 microservices | 25 compliance rules | 24 UI scenarios | 12 markets | Event-driven
 
+For a concise project-status and return-to-work summary, see [HANDOFF.md](HANDOFF.md).
+
 ---
 
 ## The Problem
